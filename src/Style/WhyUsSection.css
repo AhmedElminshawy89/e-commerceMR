@@ -1,0 +1,89 @@
+.why-us-section {
+    width: 100%;
+    padding: 50px 20px;
+    background-color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .why-us-content {
+    flex: 1;
+    max-width: 600px;
+  }
+  
+  .why-us-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #34495e;
+    margin-bottom: 20px;
+  }
+  
+  .why-us-description {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+  }
+  
+  .why-us-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .why-us-list li {
+    font-size: 1rem;
+    color: #34495e;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .why-us-list li svg{
+    margin: 0 5px;
+  }
+  
+  
+  .why-us-images {
+    flex: 1;
+    max-width: 600px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .why-us-image {
+    width: calc(50% - 10px);
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .why-us-image:nth-child(1) {
+    background-image: url('https://debebe.vamtam.com/wp-content/uploads/2022/03/iStock-1175501454.jpg');
+    z-index: 555;
+    position: relative;
+    left: 65px;
+    top: 50px;  }
+  
+  .why-us-image:nth-child(2) {
+    background-image: url('https://debebe.vamtam.com/wp-content/uploads/2022/03/iStock-1286477496.jpg');
+    z-index: 55;
+  }
+  
+  @media (max-width: 768px) {
+    .why-us-section {
+      flex-direction: column;
+      gap: 30px;
+    }
+  
+    .why-us-image,
+    .heart-icon {
+      display: none;
+    }
+  }
+  

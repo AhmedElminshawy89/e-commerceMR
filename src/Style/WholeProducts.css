@@ -1,0 +1,129 @@
+.WholeProducts {
+    background-color: #fff;
+    padding: 20px 0;
+  }
+  
+  .containerProducts {
+    padding: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: start;
+    gap: 40px;
+  }
+  .right-product{
+    gap:5px;
+    flex: .3;
+    height: auto;
+  }
+  .filter-product {
+    display: flex;
+    gap:5px;
+    flex-wrap: wrap;
+    flex: .3;
+    height: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+  }
+  
+  .filter-product .cont {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+  }
+  
+  .filter-product p {
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--dark-text);
+    background-color: #f0f8f7;
+    padding: 15px;
+    font-size: 20px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+  
+  .filter-product select,
+  .filter-product input {
+    padding: 10px;
+    padding-left: 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 200px;
+}
+.filter-product input:focus {
+outline: none;
+  border: none;
+}
+  .leftProduct{
+      flex: 1;
+  }
+  .leftProduct .products-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .filter-checkbox{
+    display: flex;
+    gap: 20px;
+    padding-left: 20px;
+    margin: 5px 0;
+    align-items: center;
+  }
+
+  .filter-checkbox-container {
+    overflow: hidden;
+    height: 0;
+    transition: height , overflow 0.3s ease-out;
+    -webkit-transition: height , overflow 0.3s ease-out;
+    -moz-transition: height , overflow 0.3s ease-out;
+    -ms-transition: height , overflow 0.3s ease-out;
+    -o-transition: height , overflow 0.3s ease-out;
+}
+  
+  .filter-checkbox-container.open {
+    height: auto; 
+    overflow: auto;
+  }
+  
+  .filter-title {
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .filter-checkbox-container .filter-checkbox {
+    margin-bottom: 8px;
+  }
+  
+  .top-product{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+  .list-vies{
+    display: flex;
+    gap: 15px;
+    font-size: 25px;
+  }
+  .list-vies svg.active{
+    color: var(--mint-green);
+  }
+  .list-vies > svg{
+    cursor: pointer;
+  }
+
+  @media screen and (max-width:992px) {
+    .containerProducts {
+        flex-direction: column;
+      }
+      .right-product,
+      .leftProduct{
+        flex: 1;
+        width: 100%;
+      }
+  }

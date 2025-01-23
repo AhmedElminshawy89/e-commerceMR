@@ -1,0 +1,272 @@
+
+  .dashboard-layout {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background: #fff;
+    color: #333;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform , width 0.3s ease-in-out;
+    overflow: auto;
+    -webkit-transition: transform , width 0.3s ease-in-out;
+    -moz-transition: transform , width 0.3s ease-in-out;
+    -ms-transition: transform , width 0.3s ease-in-out;
+    -o-transition: transform , width 0.3s ease-in-out;
+}
+  .sidebar.small-sidebar{
+    width: 50px;
+  }
+  
+  .sidebar-heading {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  
+  .sidebar-nav ul {
+    list-style: none;
+  }
+  
+  .sidebar-nav li {
+    margin-bottom: 0.4rem;
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease-in-out;
+    -webkit-transition: background-color 0.3s ease-in-out;
+    -moz-transition: background-color 0.3s ease-in-out;
+    -ms-transition: background-color 0.3s ease-in-out;
+    -o-transition: background-color 0.3s ease-in-out;
+}
+.sidebar-nav li.active,
+.sidebar-nav li.active:hover  {
+    background-color: #f0f8f7;
+}
+.sidebar-nav li.active a,
+.sidebar-nav li.active svg {
+color: var(--dark-text);
+}
+.sidebar-nav li:hover {
+    background-color: #f0f8f7;
+}
+  
+  .sidebar-nav a {
+    text-decoration: none;
+    color: var(--dark-text);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: color 0.3s ease-in-out;
+  }
+  .small-sidebar .sidebar-nav p{
+    display: none;
+  }
+  
+  .sidebar-nav a:hover {
+    color: #444;
+  }
+  .sidebar-nav svg,
+  .sidebar-nav svg:hover {
+    color: #444;
+  }
+
+  
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+  
+  .header {
+    background: #fff;
+    padding: 20px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+  }
+  .header .header-title{
+    padding-left: 20px;
+  }
+  .header-title {
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .header-dashboard{
+    z-index: 0;
+  }
+  
+  .main {
+    flex: 1;
+    padding: 20px;
+    background: #f0f8f7;
+    overflow-y: auto;
+    animation: fadeInUp 0.5s ease-in-out;
+  }
+  
+  .content{
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+}
+
+.small-sidebar .sidebar-heading >p{
+    display: none;
+}
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+
+  
+.admin-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: var(--dark-text);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .admin-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--soft-coral);
+    transition: left 0.3s ease;
+    z-index: -1;
+  }
+  
+  .admin-button:hover {
+    color: #fff;
+    background-color: var(--dark-text);
+  }
+  
+  .admin-button:hover::before {
+    left: 0;
+  }
+
+  .css-1q7ts9j-MuiPaper-root-MuiAppBar-root,
+  .css-1vwwelp-MuiDataGrid-root .MuiDataGrid-container--top [role=row], .css-1vwwelp-MuiDataGrid-root .MuiDataGrid-container--bottom [role=row],
+  .css-1hr2sou-MuiTablePagination-root:last-child,
+  .css-1vwwelp-MuiDataGrid-root .MuiDataGrid-virtualScrollerContent .MuiDataGrid-row:nth-child(even),
+  .css-1vwwelp-MuiDataGrid-root .MuiDataGrid-withBorderColor,
+  .css-w2cmb7-MuiDataGrid-root .MuiDataGrid-withBorderColor,
+  .css-1ggwzv-MuiDataGrid-root .MuiDataGrid-container--top [role=row], .css-1ggwzv-MuiDataGrid-root .MuiDataGrid-container--bottom [role=row]{
+    background-color: #f0f8f7 !important;
+  }
+  .css-p6fm8p-MuiButtonBase-root-MuiButton-root,
+  .css-74d805-MuiButtonBase-root-MuiButton-root{
+    background-color: var(--dark-text)!important;
+    color: #fff!important;
+    border: none!important;
+    border-radius: 8px!important;
+    transition: background-color 0.3s ease!important;
+  }
+  .css-p6fm8p-MuiButtonBase-root-MuiButton-root:hover,
+  .css-74d805-MuiButtonBase-root-MuiButton-root:hover{
+    background-color: #f0f8f7!important;
+    color: var(--dark-text)!important;
+    border: none!important;
+    font-weight: bolder !important;
+    border-radius: 8px!important;
+    transition: background-color 0.3s ease!important;
+  }
+  .css-1tg4qxh-MuiButtonBase-root-MuiButton-root,
+  .css-1pcpkfq-MuiButtonBase-root-MuiButton-root{
+    background-color: #f0f8f7!important;
+    color: var(--dark-text)!important;
+    border: none!important;
+    font-weight: bolder !important;
+    border-radius: 8px!important;
+    transition: background-color 0.3s ease!important;
+  }
+  .css-hl3w8t-MuiButtonBase-root-MuiButton-root{
+    font-size: 18px !important;
+    color: var(--dark-text) !important;
+  }
+  .css-1xj59sp-MuiButtonBase-root-MuiButton-root{
+    font-size: 18px !important;
+    color: darkred !important;
+  }
+
+  .MuiModal-root{
+    overflow: auto !important;
+    display: block !important;
+    margin: 0 auto;
+
+  }
+  .css-dnae40,
+  .css-q9vfwo{
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, 0);
+  }
+
+  @media screen and (max-width: 992px) {
+    .sidebar{
+        position: relative;
+        left: -100%;
+        z-index: 55555;
+        transition: left .3s ease;
+        -webkit-transition: left .3s ease;
+        -moz-transition: left .3s ease;
+        -ms-transition: left .3s ease;
+        -o-transition: left .3s ease;
+}
+    .sidebar.small-sidebar{
+        left: 0;
+        width: 250px;
+    }
+    .small-sidebar .sidebar-nav p,
+    .small-sidebar .sidebar-heading >p{
+        display: none;
+        display: block;
+      }
+      .main-content{
+        position: absolute;
+        left: 0;
+        width: 100vw;
+      }
+      .overlay-dashboard {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); 
+        z-index: 5555;
+      }
+  }

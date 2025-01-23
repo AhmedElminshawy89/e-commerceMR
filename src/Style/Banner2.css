@@ -1,0 +1,69 @@
+.banner2-container {
+    width: 100%;
+    height: 400px;
+    background: url('../assets/Img/banner2.avif') center/cover no-repeat; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .banner2-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1; 
+  }
+  
+  .banner2-content {
+    text-align: center;
+    color: #fff;
+    animation: fadeIn 2s ease-in-out;
+    position: absolute;
+    z-index: 2; 
+  }
+  
+  .banner2-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .banner2-description {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+  
+  .banner2-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: var(--mint-green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .banner2-button:hover {
+    background-color: var(--soft-coral);
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

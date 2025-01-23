@@ -1,0 +1,145 @@
+*{
+  padding:0;
+  margin:0;
+}
+a{
+  text-decoration:none
+}
+
+  
+body {
+  font-family: var(--font-family);
+  background-color: #f0f8f7;
+  color: #333;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f8f7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mint-green);
+  /* border-radius: 5px; */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mint-green)
+}
+
+::selection{
+  background: var(--mint-green);
+  color: white !important;
+}
+
+
+.separator {
+  border-left: 2px solid #ddd;
+  margin: 0 15px; 
+  height: 20px;
+  align-self: center; 
+}
+
+:where(.css-dev-only-do-not-override-7ny38l).ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled):hover {
+  background: var(--dark-text);
+  color: #fff;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  border-radius: 50px;
+  border: 1px solid var(--mint-green);
+  overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+  background: white;
+  margin-bottom: 30px;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  -ms-border-radius: 50px;
+  -o-border-radius: 50px;
+}
+
+.title-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -200%;
+  width: 200%;
+  height: 100%;
+  background: var(--mint-green);
+  z-index: 0;
+  transition: left 0.3s ease;
+}
+
+.title-section:hover::before {
+  left: 0;
+}
+
+.title-section .icon {
+  background-color: var(--mint-green);
+  color: #fff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.title-section h3 {
+  padding: 0 15px;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
+}
+
+.title-section:hover h3,
+.title-section:hover .icon {
+  color: #fff;
+  background-color: transparent;
+}
+.title-container{
+  display:flex;
+  justify-content:space-between;
+  align-items:center
+}
+.title-container a{
+  color: var(--mint-green);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Shared css */
+.flex-between{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.border-bottom{
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.status-success {
+  color: green;
+  font-weight: bold;
+}
+
+.status-failed {
+  color: red;
+  font-weight: bold;
+}

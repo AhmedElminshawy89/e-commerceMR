@@ -1,0 +1,139 @@
+html[dir='ltr'] .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    flex-direction: row;
+    background: #fff;   
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    bottom: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    border-radius: 10px;
+    left: 50%;
+    right: 50%;
+}
+html[dir='rtl'] .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+    flex-direction: row;
+    background: #fff;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    bottom: 50%;
+    transform: translate(50%, -50%) !important;
+    width: 80%;
+    border-radius: 10px;
+    left: 50%;
+    right: 50%;
+    -webkit-transform: translate(50%, -50%) !important;
+    -moz-transform: translate(50%, -50%) !important;
+    -ms-transform: translate(50%, -50%) !important;
+    -o-transform: translate(50%, -50%) !important;
+}
+
+.form-container {
+    background-color: var(--text-color);
+    padding: 40px;
+    box-shadow: 0 4px 12px var(--box-shadow-color);
+    flex: 1;
+    border-radius: 8px;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.text-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0 20px;
+    /* background: 
+        linear-gradient(135deg, rgba(0, 51, 102, 0.8), rgba(139, 0, 0, 0.6), rgba(255, 255, 255, 0.2)),
+        url('../assets/Img/login.jpg'); */
+        background-color: var(--mint-green);
+    background-blend-mode: overlay; 
+    background-size: cover;
+    background-position: center;
+    color: var(--text-color);
+}
+
+.link-auth {
+    color: var(--primary-color);
+}
+
+.link-auth:hover {
+    color: var(--secondary-color) !important;
+}
+
+
+.heading {
+    padding-bottom: 14px;
+}
+
+.text-content {
+    text-align: center;
+    color: #fff;
+}
+
+.submit-button {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.submit-button:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--text-color) !important;
+    font-weight: bold !important;
+}
+
+.text-content {
+    text-align: center;
+}
+
+.flex-btn-auth{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+@media (max-width: 992px) {
+    .image-container {
+        display: none;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        overflow-y: auto;
+    }
+    .text-container{
+        display: none;
+    }
+    .form-container{
+        width: 90%;
+        padding: 20px;
+        box-shadow:none;
+        margin-top: 50px;
+    }
+}
+
+
+:where(.css-dev-only-do-not-override-7ny38l).ant-steps .ant-steps-item-process .ant-steps-item-icon{
+    background-color: var(--mint-green) !important;
+    border-color: var(--mint-green) !important;
+}
