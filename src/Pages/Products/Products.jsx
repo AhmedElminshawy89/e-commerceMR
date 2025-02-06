@@ -1,10 +1,13 @@
+import { useTranslation } from "react-i18next"
 import BannerPage from "../../Shared/BannerPage"
-import products from '../../assets/Img/banner2.avif'
 import WholeProducts from "../../components/WholeProducts"
+import { useShowAllAdminImageBannersQuery } from "../../app/Api/SiteDetails"
 const ProductsPage = () => {
+  const {i18n} = useTranslation()
+  const {data} = useShowAllAdminImageBannersQuery()
   return (
     <>
-      <BannerPage pageTitle={'Products'} image={products}/>
+      <BannerPage pageTitle={i18n.language==="EN"?'Products':"المنتجات"} image={data?.imageBanner?.map((e)=>e.product)}/>
       <WholeProducts/>
     </>
   )

@@ -1,118 +1,302 @@
-import { useState, useEffect } from "react";
-import { Box, Avatar, Button, Dialog, DialogTitle, DialogContent, TextField, DialogActions, MenuItem, Select, FormControl, InputLabel, Chip, OutlinedInput } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { useState } from "react";
+import { CiEdit } from "react-icons/ci";
+import { MdDelete } from "react-icons/md";
+import { RiLockPasswordLine } from "react-icons/ri";
+
+import { useAddAdminMutation, useUpdateAdminMutation, useShowAdminTypeQuery  ,useForgetPasswordAdminMutation, useDelAdminMutation} from "../../app/Api/Admin";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { Table } from "antd";
+import { Link } from "react-router-dom";
 
 const AdminPanel = () => {
-  const [users, setUsers] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMode, setDialogMode] = useState("add");
-  const [selectedUser, setSelectedUser] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     gender: "",
-    country: "",
-    city: "",
     avatar: "",
-    roles: [],
+    role: ["admin"],
     type: "",
+    password: "",
+    password_confirmation: "",
   });
 
-  const rolesOptions = ["Read", "Write", "Edit", "Delete", "Manage"];
-  const typeOptions = ["Sales", "Admin"];
+  const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
-  useEffect(() => {
-    const initialData = [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "johndoe@example.com",
-        phone: "+1234567890",
-        gender: "Male",
-        country: "USA",
-        city: "New York",
-        avatar: "https://via.placeholder.com/50",
-        roles: ["Read", "Write"],
-        type: "Admin",
-      },
-      {
-        id: 2,
-        name: "Jane Smith",
-        email: "janesmith@example.com",
-        phone: "+9876543210",
-        gender: "Female",
-        country: "UK",
-        city: "London",
-        avatar: "https://via.placeholder.com/50",
-        roles: ["Read", "Edit"],
-        type: "Sales",
-      },
-    ];
-    setUsers(initialData);
-  }, []);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+
+  // const rolesOptions = ["Admin", "Moderator", "Sales"];
+  const typeOptions = ["Admin", "Moderator", "Sales"];
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  const [addAdmin] = useAddAdminMutation();
+  const [updateAdmin] = useUpdateAdminMutation();
+  const [delAdmin] = useDelAdminMutation();
+  const [resetPassAdmin] = useForgetPasswordAdminMutation();
+  const { data, isLoading, refetch } = useShowAdminTypeQuery({ type: "Admin", page: currentPage });
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleOpenDialog = (mode, user = null) => {
     setDialogMode(mode);
-    setSelectedUser(user);
-    setFormData(user || { name: "", email: "", phone: "", gender: "", country: "", city: "", avatar: "", roles: [], type: "" });
+    setFormData(
+      user || {
+        name_en: "",
+        email: "",
+        phone: "",
+        gender: "",
+        role: ["admin"],
+        type: "",
+        password: "",
+        password_confirmation: "",
+      }
+    );
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setFormData({ name: "", email: "", phone: "", gender: "", country: "", city: "", avatar: "", roles: [], type: "" });
+    setFormData({
+      name_en: "",
+      email: "",
+      phone: "",
+      gender: "",
+      role: ["admin"],
+      type: "",
+      password: "",
+      password_confirmation: "",
+    });
   };
 
-  const handleSave = () => {
-    if (dialogMode === "add") {
-      const newUser = { ...formData, id: users.length + 1 };
-      setUsers([...users, newUser]);
-    } else if (dialogMode === "edit") {
-      setUsers(users.map(user => (user.id === selectedUser.id ? { ...formData, id: selectedUser.id } : user)));
+  const handleSave = async () => {
+    if (!formData.name || !formData.email || !formData.phone || !formData.type) {
+      setSnackbarMessage("Please fill in all fields correctly!");
+      setSnackbarOpen(true);
+      return;
     }
-    handleCloseDialog();
+  
+    if (dialogMode === "add") {
+      if (!formData.password || !formData.password_confirmation) {
+        setSnackbarMessage("Please enter a password and confirm it!");
+        setSnackbarOpen(true);
+        return;
+      }
+  
+      if (formData.password !== formData.password_confirmation) {
+        setSnackbarMessage("Passwords do not match!");
+        setSnackbarOpen(true);
+        return;
+      }
+  
+      if (formData.password.length < 8) {
+        setSnackbarMessage("Password must be at least 8 characters!");
+        setSnackbarOpen(true);
+        return;
+      }
+    }
+  
+    try {
+      let response;
+      if (dialogMode === "add") {
+        response = await addAdmin(formData).unwrap();
+      } else if (dialogMode === "edit") {
+        response = await updateAdmin(formData).unwrap();
+      }
+  
+      if (response.status === true) {
+        setSnackbarMessage(dialogMode === "add" ? "Admin added successfully!" : "Admin updated successfully!");
+        setSnackbarOpen(true);
+        refetch();
+        handleCloseDialog();
+      }
+    } catch (error) {
+      console.error("Error saving admin:", error);
+  
+      if (error?.data?.errors) {
+        let errorMessage = '';
+  
+        for (const [field, messages] of Object.entries(error.data.errors)) {
+          errorMessage += `${field}: ${messages.join(', ')}\n`;
+        }
+  
+        setSnackbarMessage(errorMessage);
+      } else {
+        setSnackbarMessage("An unexpected error occurred.");
+      }
+  
+      setSnackbarOpen(true);
+    }
+  };
+  
+  
+  
+
+  const handleDelete = async (id) => {
+    setDeleteId(id);
+    setOpenDeleteDialog(true);
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter(user => user.id !== id));
+  const confirmDelete = async () => {
+    try {
+      await delAdmin(deleteId).unwrap();
+      setSnackbarMessage("Admin deleted successfully!");
+      setOpenDeleteDialog(false);
+      refetch();
+    } catch (error) {
+      console.error("Error deleting admin:", error);
+      setSnackbarMessage("An error occurred while deleting the admin.");
+      setSnackbarOpen(true);
+    }
   };
 
+  const handleChangePassword = (record) => {
+    console.log("Changing password for admin:", record);
+    setOpenPasswordDialog(true);
+  };
+
+  const handlePasswordSave = async () => {
+    if (!newPassword || !confirmNewPassword || newPassword !== confirmNewPassword) {
+      setSnackbarMessage("Passwords do not match or are empty!");
+      setSnackbarOpen(true);
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setSnackbarMessage("Passwords do not match!");
+      setSnackbarOpen(true);
+      return;
+    }
+    
+    if (newPassword.length < 8) {
+      setSnackbarMessage("Password must be at least 8 characters!");
+      setSnackbarOpen(true);
+      return;
+    }
+    
+    const admin = {password: newPassword, password_confirmation: confirmNewPassword}
+    try {
+      await resetPassAdmin(admin).unwrap();
+      setSnackbarMessage("Password changed successfully!");
+      setOpenPasswordDialog(false);
+    } catch (error) {
+      console.error("Error changing password:", error);
+      setSnackbarMessage("An error occurred while changing the password.");
+      setSnackbarOpen(true);
+    }
+  };
+  const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
   const columns = [
-    { field: "avatar", headerName: "Avatar", flex: 0.5, minWidth: 100,
-         renderCell: (params) => <Avatar src={params.value} alt="Avatar" /> },
-    { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
-    { field: "email", headerName: "Email", flex: 1.5, minWidth: 200 },
-    { field: "phone", headerName: "Phone", flex: 1, minWidth: 150 },
-    { field: "roles", headerName: "Roles", flex: 1, minWidth: 150},
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Phone", dataIndex: "phone", key: "phone" },
+    { title: "Type", dataIndex: "type", key: "type" },
     {
-      field: "actions",
-      headerName: "Actions",
-      flex: 1,
-      minWidth: 350,
-      renderCell: (params) => (
+      title: "Actions",
+      key: "actions",
+      render: (_, record) =>
+        IsAvailable?null: (
         <>
-          <Button onClick={() => handleOpenDialog("edit", params.row)} color="primary">Edit</Button>
-          <Button onClick={() => handleDelete(params.row.id)} color="secondary">Delete</Button>
+          <Button
+            onClick={() => handleOpenDialog("edit", record)}
+            style={{ color: "green", marginRight: 10 }}
+            icon={<CiEdit />}
+          >
+            <CiEdit />
+          </Button>
+          <Button
+            onClick={() => handleDelete(record.id)}
+            style={{ color: "red" }}
+            icon={<MdDelete />}
+          >
+            <MdDelete />
+          </Button>
+          <Button
+            onClick={() => handleChangePassword(record)}
+            style={{ color: "#333" }}
+            icon={<RiLockPasswordLine />}
+          >
+            <RiLockPasswordLine />
+          </Button>
         </>
       ),
     },
   ];
 
+  const rowClassName = (record, index) => {
+    return index % 2 !== 0 ? "even-row" : "";
+  };
+
   return (
-    <Box sx={{ height: 500, width: "100%" }}>
-      <Button variant="contained" color="primary" onClick={() => handleOpenDialog("add")} sx={{ marginBottom: 2 }}>
-        Add Admin
-      </Button>
-      <DataGrid
-        rows={users}
+    <Box sx={{ height: "100%", width: "100%" }}  className="cta">
+            <div style={{padding:10,marginBottom:20}}>
+      <Link
+      to={'/dashboard/admin/control/AdminSearch'}
+      className="banner-button"
+      >
+        Search Admin
+      </Link>      
+      </div>
+      {!IsAvailable&&(
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenDialog("add")}
+          sx={{ marginBottom: 2 }}
+        >
+          Add Admin
+        </Button>
+      )}
+
+      <Table
+        dataSource={data?.admin?.data || []}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 15]}
-        disableSelectionOnClick
+        rowClassName={rowClassName}
+        rowKey="id"
+        loading={isLoading}
+        pagination={{
+          total: data?.admin?.total || 0,
+          current: currentPage,
+          pageSize: pageSize,
+          onChange: (page) => setCurrentPage(page),
+        }}
       />
+
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>Are you sure you want to delete this admin?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>{dialogMode === "add" ? "Add User" : "Edit User"}</DialogTitle>
+        <DialogTitle>{dialogMode === "add" ? "Add Admin" : "Edit Admin"}</DialogTitle>
         <DialogContent>
           <TextField
             label="Name"
@@ -136,46 +320,95 @@ const AdminPanel = () => {
             margin="normal"
           />
           <FormControl fullWidth margin="normal">
-            <InputLabel>Roles</InputLabel>
+            <InputLabel>Gender</InputLabel>
             <Select
-              multiple
-              value={formData.roles}
-              onChange={(e) => setFormData({ ...formData, roles: e.target.value })}
-              input={<OutlinedInput label="Roles" />}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
+              value={formData.gender}
+              onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
             >
-              {rolesOptions.map((role) => (
-                <MenuItem key={role} value={role}>
-                  {role}
-                </MenuItem>
-              ))}
+              <MenuItem value={"male"}>Male</MenuItem>
+              <MenuItem value={"female"}>Female</MenuItem>
             </Select>
           </FormControl>
           <FormControl fullWidth margin="normal">
             <InputLabel>Type</InputLabel>
             <Select
-              value={formData.type}
+              value={formData.type || 'a'}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
             >
-              {typeOptions.map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
+              {typeOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+          {dialogMode === "add" && (
+            <>            
+              <TextField
+                label="Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                fullWidth
+                type="password"
+                margin="normal"
+              />
+              <TextField
+                label="Confirm Password"
+                value={formData.password_confirmation}
+                onChange={(e) => setFormData({ ...formData, password_confirmation: e.target.value })}
+                fullWidth
+                type="password"
+                margin="normal"
+              />
+            </>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleSave} color="primary">Save</Button>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={openPasswordDialog} onClose={() => setOpenPasswordDialog(false)}>
+        <DialogTitle>Change Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="New Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            fullWidth
+            type="password"
+            margin="normal"
+          />
+          <TextField
+            label="Confirm New Password"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            fullWidth
+            type="password"
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenPasswordDialog(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handlePasswordSave} color="primary">
+            Save Password
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

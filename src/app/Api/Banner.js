@@ -8,7 +8,7 @@ export const BannerApi = createApi({
     baseUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
-      const language = localStorage.getItem('userLanguage') || "EN";
+      const language = (localStorage.getItem('userLanguage') || "en").toLowerCase();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -50,6 +50,12 @@ export const BannerApi = createApi({
         method: 'GET',
       }),
     }),
+    showBannerLand: builder.query({
+      query: () => ({
+        url: `/admin/banner/showLand`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -59,4 +65,5 @@ export const {
   useUpdateStatusBannerMutation,
   useDelBannerMutation,
   useShowAllAdminBannerQuery,
+  useShowBannerLandQuery,
 } = BannerApi;

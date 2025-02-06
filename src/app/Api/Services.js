@@ -8,7 +8,7 @@ export const servicesApi = createApi({
     baseUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
-      const language = localStorage.getItem('userLanguage') || "EN";
+      const language = (localStorage.getItem('userLanguage') || "en").toLowerCase();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -44,6 +44,12 @@ export const servicesApi = createApi({
         method: 'GET',
       }),
     }),
+    showServices: builder.query({
+      query: () => ({
+        url: `/admin/services/show`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -52,4 +58,5 @@ export const {
   useUpdateServicesMutation,
   useDelServicesMutation,
   useShowAllAdminServicesQuery,
+  useShowServicesQuery,
 } = servicesApi;

@@ -8,7 +8,7 @@ export const categoriesApi = createApi({
     baseUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
-      const language = localStorage.getItem('userLanguage') || "EN";
+      const language = (localStorage.getItem('userLanguage') || "en").toLowerCase();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -39,8 +39,20 @@ export const categoriesApi = createApi({
       }),
     }),
     showAllAdminCategory: builder.query({
-      query: (page) => ({
-        url: `/admin/category/showAll?page=${page}`,
+      query: ({page,name}) => ({
+        url: `/admin/category/showAll?page=${page}&name=${name}`,
+        method: 'GET',
+      }),
+    }),
+    showAllAdminCategorySearch: builder.query({
+      query: (name) => ({
+        url: `/admin/category/searchCategories?name=${name}`,
+        method: 'GET',
+      }),
+    }),
+    showCategory: builder.query({
+      query: () => ({
+        url: `/admin/category/allCategories`,
         method: 'GET',
       }),
     }),
@@ -52,4 +64,6 @@ export const {
   useUpdateCategoryMutation,
   useDelCategoryMutation,
   useShowAllAdminCategoryQuery,
+  useShowCategoryQuery,
+  useShowAllAdminCategorySearchQuery,
 } = categoriesApi;

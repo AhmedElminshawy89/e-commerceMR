@@ -137,3 +137,7 @@ html[dir='rtl'] .container {
     background-color: var(--mint-green) !important;
     border-color: var(--mint-green) !important;
 }
+
+.MuiDialogTitle-root+.css-kw13he-MuiDialogContent-root{
+    font-size: 27px !important;
+}

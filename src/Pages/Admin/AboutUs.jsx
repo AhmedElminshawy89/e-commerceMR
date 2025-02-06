@@ -33,7 +33,8 @@ const AboutUs = () => {
     desc_en: "",
     image: "",
   });
-
+  const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
   const [errors, setErrors] = useState({
     tittle_ar: "",
     tittle_en: "",
@@ -62,10 +63,21 @@ const AboutUs = () => {
     setErrors({ tittle_ar: "", tittle_en: "", desc_ar: "", desc_en: "", image: ""});
   };
 
+
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
+    
     if (name === "image") {
-      setFormValues({ ...formValues, image: files[0] });
+      const file = files[0];
+      
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      
+      if (file && !allowedTypes.includes(file.type)) {
+        message.warning('The image must be a file of type: jpg, jpeg, png, gif.');
+        return; 
+      }
+      
+      setFormValues({ ...formValues, image: file });
     } else {
       setFormValues({ ...formValues, [name]: value });
     }
@@ -158,7 +170,8 @@ const AboutUs = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
+      render: (_, record) => 
+        IsAvailable?null: (
         <>
           <Button
             onClick={() => handleEditCategory(record)}
@@ -182,9 +195,11 @@ const AboutUs = () => {
   };
   return (
     <Box sx={{ height: 500, width: "100%" }}>
-      <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{ marginBottom: 2 }}      >
-        Add About Us
-      </Button>
+      {!IsAvailable&&(
+        <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{ marginBottom: 2 }}      >
+          Add About Us
+        </Button>
+      )}
 
       <Box sx={{ height: "auto", width: "100%" }} className="cta">
         <Table

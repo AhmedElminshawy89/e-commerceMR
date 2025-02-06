@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { CiEdit } from "react-icons/ci";
-import { Box, Button, Modal, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { Box, Button, Modal, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem } from "@mui/material";
 import { styled } from "@mui/system";
 import { MdDelete } from "react-icons/md";
+import { useSaveDiscountMutation, useUpdateDiscountMutation,
+   useDelDiscountMutation, useShowDiscountQuery } from '../../app/Api/Discount';
+import { Table } from "antd";
 
 const StyledModal = styled(Modal)({
-  display: "block",
+  display: "flex",
   alignItems: "center",
   justifyContent: "center",
 });
@@ -15,7 +17,11 @@ const StyledBox = styled(Box)({
   backgroundColor: "white",
   padding: "20px",
   borderRadius: "8px",
-  width: "800px",
+  maxWidth: "600px",
+  position: "relative",
+  left: "50%",
+  right: "50%",
+  transform: "translate(-50%, 10px)",
 });
 
 const CashBack = () => {
@@ -23,22 +29,29 @@ const CashBack = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [formValues, setFormValues] = useState({
-    CashBack: "",
+    cashback: "",
+    type: "percent",
   });
 
   const [errors, setErrors] = useState({
     CashBack: "",
+    type: "",
   });
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
+  const { data: cashbackData, refetch ,isLoading} = useShowDiscountQuery();
+  const [saveDiscount] = useSaveDiscountMutation();
+  const [updateDiscount] = useUpdateDiscountMutation();
+  const [delDiscount] = useDelDiscountMutation();
+
+  console.log(cashbackData?.cashBack)
   useEffect(() => {
-    const initialData = [
-      { id: 1,CashBack:50},
-    ];
-    setCategories(initialData);
-  }, []);
+    if (cashbackData) {
+      setCategories(cashbackData?.cashBack);
+    }
+  }, [cashbackData]);
 
   const handleOpenModal = () => {
     setIsModalVisible(true);
@@ -47,8 +60,8 @@ const CashBack = () => {
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setEditingCategory(null);
-    setFormValues({ CashBack: ""});
-    setErrors({ CashBack: ""});
+    setFormValues({ cashback: "", type: "percent" });
+    setErrors({ CashBack: "", type: "" });
   };
 
   const handleInputChange = (e) => {
@@ -58,28 +71,26 @@ const CashBack = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formValues.CashBack) newErrors.CashBack = "CashBack required";
+    if (!formValues.cashback) newErrors.CashBack = "CashBack required";
+    if (!formValues.type) newErrors.type = "Type is required";
 
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddOrEditCategory = () => {
+  const handleAddOrEditCategory = async () => {
     if (!validateForm()) return;
 
+    const newCategory = { ...formValues };
+
     if (editingCategory) {
-      setCategories((prevCategories) =>
-        prevCategories.map((category) =>
-          category.id === editingCategory.id ? { ...category, ...formValues } : category
-        )
-      );
+      await updateDiscount({ id: editingCategory.id, updateDiscount: newCategory });
     } else {
-      setCategories((prevCategories) => [
-        ...prevCategories,
-        { id: categories.length + 1, ...formValues, status: false },  // New category will have a default status of false
-      ]);
+      await saveDiscount(newCategory);
     }
+
+    refetch();
     handleCloseModal();
   };
 
@@ -94,31 +105,36 @@ const CashBack = () => {
     setOpenDeleteDialog(true);
   };
 
-  const confirmDeleteCategory = () => {
+  const confirmDeleteCategory = async () => {
+    await delDiscount(categoryToDelete);
     setCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryToDelete));
     setOpenDeleteDialog(false);
     setCategoryToDelete(null);
+    refetch();
   };
 
   const cancelDeleteCategory = () => {
     setOpenDeleteDialog(false);
     setCategoryToDelete(null);
   };
-
+  const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
   const columns = [
-    { field: "CashBack", headerName: "CashBack", flex: 1, minWidth: 250 },
+    { title: "Discount", dataIndex: "cashback", key: "cashback", render: (text) => text ,minWidth:150},
+    { title: "Type", dataIndex: "type", key: "type", render: (text) => text ,minWidth:150},
     {
-      field: "actions",
-      headerName: "Actions",
-      renderCell: (params) => (
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => 
+        IsAvailable?null:(
         <>
           <Button
-            onClick={() => handleEditCategory(params.row)}
+            onClick={() => handleEditCategory(record)}
             style={{ color: "green" }}
             startIcon={<CiEdit />}
           />
           <Button
-            onClick={() => handleDeleteCategory(params.row.id)}
+            onClick={() => handleDeleteCategory(record.id)}
             style={{ color: "red" }}
             startIcon={<MdDelete />}
           />
@@ -130,43 +146,74 @@ const CashBack = () => {
     },
   ];
 
+  const rowClassName = (record, index) => {
+    return index % 2 !== 0 ? "even-row" : "";
+  };
+
   return (
     <Box sx={{ height: 500, width: "100%" }}>
-      <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{ marginBottom: 2 }}      >
-        Add CashBack
-      </Button>
+{!IsAvailable && categories.length === 0 && (
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={handleOpenModal}
+    sx={{ marginBottom: 2 }}
+  >
+    Add Discount
+  </Button>
+)}
 
-      <DataGrid rows={categories} columns={columns} pageSize={5} 
-          rowsPerPageOptions={[5, 10, 15]}
-          checkboxSelection
-          disableSelectionOnClick />
+
+      <Box sx={{ height: "auto", width: "100%" }} className="cta">
+        <Table
+          dataSource={categories}
+          columns={columns}
+          rowKey="id"
+          loading={isLoading}
+          rowClassName={rowClassName}
+          Pagination={false}
+        />
+      </Box>
 
       <StyledModal open={isModalVisible} onClose={handleCloseModal}>
         <StyledBox>
           <Typography variant="h6" gutterBottom>
-            {editingCategory ? "Edit CashBack" : "Add CashBack"}
+            {editingCategory ? "Edit Discount" : "Add Discount"}
           </Typography>
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } , gap:2}}>
+          <Box>
             <TextField
-                label="CashBack"
-                name="CashBack"
-                value={formValues.CashBack}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                error={!!errors.CashBack}
-                helperText={errors.CashBack}
+              label="CashBack"
+              name="cashback"
+              value={formValues.cashback}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              error={!!errors.CashBack}
+              helperText={errors.CashBack}
             />
-        </Box>
-          <DialogActions>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
-            <Button variant="outlined" color="secondary" onClick={handleCloseModal} sx={{ marginRight: 2 }}>
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleAddOrEditCategory}>
-              Save
-            </Button>
+
+            <TextField
+              select
+              label="Type"
+              name="type"
+              value={formValues.type}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+            >
+              <MenuItem value="percent">Percent</MenuItem>
+              <MenuItem value="amount">Amount</MenuItem>
+            </TextField>
           </Box>
+          <DialogActions>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
+              <Button variant="outlined" color="secondary" onClick={handleCloseModal} sx={{ marginRight: 2 }}>
+                Cancel
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleAddOrEditCategory}>
+                Save
+              </Button>
+            </Box>
           </DialogActions>
         </StyledBox>
       </StyledModal>

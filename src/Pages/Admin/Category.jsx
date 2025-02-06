@@ -10,6 +10,7 @@ import {
   useShowAllAdminCategoryQuery,
 } from "../../app/Api/Categories";
 import { message, Table } from "antd";
+import { Link } from "react-router-dom";
 
 const StyledModal = styled(Modal)({
   display: "flex",
@@ -65,8 +66,18 @@ const Category = () => {
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
+    
     if (name === "image") {
-      setFormValues({ ...formValues, image: files[0] });
+      const file = files[0];
+      
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      
+      if (file && !allowedTypes.includes(file.type)) {
+        message.warning('The image must be a file of type: jpg, jpeg, png, gif.');
+        return; 
+      }
+      
+      setFormValues({ ...formValues, image: file });
     } else {
       setFormValues({ ...formValues, [name]: value });
     }
@@ -148,12 +159,12 @@ const Category = () => {
   };
 
   const handleExportToCSV = () => {
-    const header = ["ID", "اسم الفئة", "اسم الفئة (بالإنجليزية)", "الصورة"];
+    const header = ["ID", "اسم الفئة", "اسم الفئة (بالإنجليزية)"];
     const rows = categories.map((category) => [
       category.id,
       category.name_ar,
       category.name_en,
-      category.image,
+      // category.image,
     ]);
 
     let csvContent = "\ufeff" + header.join(",") + "\n";
@@ -173,6 +184,9 @@ const Category = () => {
     document.body.removeChild(link);
   };
 
+    const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
+
   const columns = [
     { title: "Category Name (Arabic)", dataIndex: "name_ar", key: "name_ar", render: (text) => text },
     { title: "Category Name (English)", dataIndex: "name_en", key: "name_en", render: (text) => text },
@@ -191,7 +205,8 @@ const Category = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
+      render: (_, record) => 
+        IsAvailable?null:(
         <>
           <Button
             onClick={() => handleEditCategory(record)}
@@ -216,16 +231,18 @@ const Category = () => {
 
   return (
     <Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleOpenModal}
-        sx={{ marginBottom: 2 }}
-        loading={loading} 
-      >
-        Add Category
-      </Button>
-
+      {!IsAvailable && (
+        <>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleOpenModal}
+          sx={{ marginBottom: 2 }}
+          loading={loading} 
+        >
+          Add Category
+        </Button>
+        
       <Button
         variant="outlined"
         color="secondary"
@@ -235,7 +252,17 @@ const Category = () => {
       >
         Export to CSV
       </Button>
+        </>
+      )}
 
+      <div style={{padding:10,marginBottom:20}}>
+      <Link
+      to={'/dashboard/admin/control/CategorySearch'}
+      className="banner-button"
+      >
+        Search Category
+      </Link>      
+      </div>
       <Box sx={{ height: "auto", width: "100%" }} className="cta">
         <Table
           dataSource={categories}

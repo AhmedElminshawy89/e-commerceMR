@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
+/* eslint-disable no-unsafe-optional-chaining */
+import { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { Box, Button, Modal, TextField, Typography,
      Dialog, DialogActions, DialogContent, DialogTitle, styled ,
      Select, MenuItem, InputLabel, FormControl,
      FormHelperText} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { MdDelete, MdDeleteOutline } from "react-icons/md";
-import image from '../../assets/Img/products.webp';
 import { IoIosAdd } from "react-icons/io";
+import { useShowCategoryQuery } from "../../app/Api/Categories";
+import { useDelAllProductsMutation, useDelProductsMutation, useSaveProductsMutation, useShowAllAdminProductsQuery,
+   useUpdateProductMutation } from "../../app/Api/Product";
+import { message, Table } from "antd";
+import { FaRegEye } from "react-icons/fa";
+
+import ProductsModal from '../../components/Modal/ProductsModal'
+import { Link } from "react-router-dom";
 
 const StyledModal = styled(Modal)({
     display: "flex",
@@ -26,24 +33,29 @@ const StyledBox = styled(Box)({
 });
 
 const ProductsAdmin = () => {
-  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleP, setIsModalVisibleP] = useState(false);
+
+  // const handleOpenModalP = () => setIsModalVisibleP(true);
+  const handleCloseModalP = () => setIsModalVisibleP(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [showProduct, setShowProduct] = useState(null);
   const [colors, setColors] = useState(["#ffffff"]);
   const [formValues, setFormValues] = useState({
+    category_id:"",
     name_ar: "",
     name_en: "",
     desc_ar: "",
     desc_en: "",
-    mainPrice: "",
-    priceDiscount: "",
+    main_price: "",
+    price_discount: "",
     colors: [],
-    colorsCount: 0,
     sizes: [],
     stock: "",
     barcode: "",
-    mainImage: "",
-    otherImage: "",
+    image: "",
+    OtherImage: [],
   });
 
   const [errors, setErrors] = useState({
@@ -63,15 +75,23 @@ const ProductsAdmin = () => {
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  
+  const{ data:categoryData }= useShowCategoryQuery();
+  const { data, refetch ,isLoading} = useShowAllAdminProductsQuery(currentPage);
+  const [saveProduct , {isLoading:loadingSave}] = useSaveProductsMutation();
+  const [updateProduct,{isLoading:loadingUpdate}] = useUpdateProductMutation();
+  const [delProduct,{isLoading:loadingDel}] = useDelProductsMutation();
+  const [delAllProduct,{isLoading:loadingAllDel}] = useDelAllProductsMutation();
+
+
 
   useEffect(() => {
-    const initialData = [
-      { id: 1, name_ar: "منتج 1", name_en: "Product 1", desc_ar: "وصف المنتج 1", desc_en: "Product 1 Description", mainPrice: 100, priceDiscount: 10, colors: "Red, Blue", sizes: "M, L", stock: 50, barcode: "12345", mainImage: image, otherImage: image },
-      { id: 2, name_ar: "منتج 2", name_en: "Product 2", desc_ar: "وصف المنتج 2", desc_en: "Product 2 Description", mainPrice: 200, priceDiscount: 20, colors: "Green, Yellow", sizes: "S, M", stock: 30, barcode: "67890", mainImage: image, otherImage: image },
-      { id: 3, name_ar: "منتج 3", name_en: "Product 3", desc_ar: "وصف المنتج 3", desc_en: "Product 3 Description", mainPrice: 150, priceDiscount: 15, colors: "Black, White", sizes: "L, XL", stock: 20, barcode: "11223", mainImage: image, otherImage: image },
-    ];
-    setProducts(initialData);
-  }, []);
+    if (data) {
+      setCategories(data.products?.data || []);
+    }
+  }, [data]);
 
   const handleOpenModal = () => {
     setIsModalVisible(true);
@@ -86,25 +106,86 @@ const ProductsAdmin = () => {
       desc_ar: "",
       desc_en: "",
       colorsCount:"",
-      mainPrice: "",
-      priceDiscount: "",
+      main_price: "",
+      price_discount: "",
       colors: [],
       sizes: [],
       stock: "",
       barcode: "",
-      mainImage: "",
+      image: [],
     });
     setErrors({});
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
+  const handleInputChange = (e) => {
+    const { name, value, files } = e.target;
+    
+    if (name === "image") {
+      const file = files[0];
+      
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      
+      if (file && !allowedTypes.includes(file.type)) {
+        message.warning('The image must be a file of type: jpg, jpeg, png, gif.');
+        return; 
+      }
+      
+      setFormValues({ ...formValues, image: file });
+    } else {
+      setFormValues({ ...formValues, [name]: value });
+    }
   };
 
+  // const handleImageChange = (event) => {
+  //   const files = Array.from(event.target.files);
+  //   const newImages = files.map((file) => URL.createObjectURL(file)); 
+  //   setFormValues((prevValues) => ({
+  //     ...prevValues,
+  //     OtherImage: [...prevValues.OtherImage, ...newImages],
+  //   }));
+  // };
+
+  const handleAddImage = (e) => {
+    const files = e.target.files;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+  
+    Array.from(files).forEach((file) => {
+      if (!allowedTypes.includes(file.type)) {
+        message.warning('The image must be a file of type: jpg, jpeg, png, gif.');
+        return;
+      }
+      
+      if (editingProduct) {
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          OtherImage: [
+            ...(Array.isArray(prevValues.OtherImage) 
+              ? prevValues.OtherImage.filter(image => typeof image === 'object' || image.url) 
+              : []), 
+            ...Array.from(files),
+          ],
+        }));
+      } else {
+        setFormValues((prevValues) => ({
+          ...prevValues,
+          OtherImage: [
+            ...(Array.isArray(prevValues.OtherImage) ? prevValues.OtherImage : []), // التأكد من أن OtherImage مصفوفة
+            file,
+          ],
+        }));
+      }
+    });
+  };
+  
+  
+
+  const handleRemoveImage = (index) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      OtherImage: prevValues.OtherImage.filter((_, i) => i !== index),
+    }));
+  };
+  
   const handleColorChange = (index, event) => {
     const newColors = [...colors];
     newColors[index] = event.target.value;
@@ -140,36 +221,70 @@ const ProductsAdmin = () => {
     if (!formValues.name_en) newErrors.name_en = "Product Name (English) is required";
     if (!formValues.desc_ar) newErrors.desc_ar = "Product Description (Arabic) is required";
     if (!formValues.desc_en) newErrors.desc_en = "Product Description (English) is required";
-    if (!formValues.mainPrice) newErrors.mainPrice = "Main Price is required";
-    if (!formValues.priceDiscount) newErrors.priceDiscount = "Price Discount is required";
+    if (!formValues.main_price) newErrors.mainPrice = "Main Price is required";
+    if (!formValues.price_discount) newErrors.priceDiscount = "Price Discount is required";
     if (!formValues.colors) newErrors.colors = "Product Colors are required";
-    if (!formValues.colorsCount) newErrors.colorsCount = "Colors Count are required";
     if (!formValues.sizes) newErrors.sizes = "Product Sizes are required";
     if (!formValues.stock) newErrors.stock = "Product Stock is required";
     if (!formValues.barcode) newErrors.barcode = "Product Barcode is required";
-    if (!formValues.mainImage) newErrors.mainImage = "Main Image is required";
+    if (!formValues.image) newErrors.mainImage = "Main Image is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddOrEditProduct = () => {
+  const handleAddOrEditProduct = async () => {
     if (!validateForm()) return;
+  
+    const formData = new FormData();
+    formData.append("category_id", formValues.category_id);
+    formData.append("name_ar", formValues.name_ar);
+    formData.append("name_en", formValues.name_en);
+    formData.append("desc_ar", formValues.desc_ar);
+    formData.append("desc_en", formValues.desc_en);
+    formData.append("main_price", formValues.main_price);
+    formData.append("price_discount", parseFloat(formValues.price_discount));
+    formData.append("colors", JSON.stringify(formValues.colors)); 
+    formData.append("sizes", JSON.stringify(formValues.sizes));  
+    formData.append("stock", formValues.stock);
+    formData.append("image", formValues.image);
+    formData.append("barcode", formValues.barcode);
+    formValues.OtherImage.forEach((file) => {
+      formData.append("OtherImage[]", file); 
+    });
+     
+    try {
+      let res;
+      if (editingProduct) {
+        res = await updateProduct({ id: editingProduct.id, updateProduct: formData });
+        // message.success("Product updated successfully!");
+      } else {
+        res = await saveProduct(formData);
 
-    if (editingProduct) {
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === editingProduct.id ? { ...product, ...formValues } : product
-        )
-      );
-    } else {
-      setProducts((prevProducts) => [
-        ...prevProducts,
-        { id: products.length + 1, ...formValues },
-      ]);
+      }  
+      if (res?.error?.data?.errors) {
+        const errors = res.error.data.errors;
+        Object.keys(errors).map((key) => {
+          const errorMessages = errors[key];
+          message.error(...errorMessages);
+          // alert(...errorMessages)
+        });
+      }
+      if(res?.data?.status === true){
+        refetch();
+        message.success(res?.data?.msg);
+        alert(res?.data?.msg);
+        handleCloseModal();
+      }
+  
+    } catch (error) {
+      console.error("Error during save or update:", error);
+      message.error("An unexpected error occurred. Please try again.");
     }
-    handleCloseModal();
+    console.log(formValues);
   };
+  
+  
 
   const handleEditProduct = (product) => {
     setFormValues(product);
@@ -177,15 +292,45 @@ const ProductsAdmin = () => {
     setIsModalVisible(true);
   };
 
+  const handleShowProduct = (product) => {
+    setShowProduct(product);
+    setIsModalVisibleP(true);
+  };
+
   const handleDeleteProduct = (id) => {
     setProductToDelete(id);
     setOpenDeleteDialog(true);
   };
+  const handleAllDeleteProduct = async () => {
+    const confirmDelete = window.confirm("هل أنت متأكد أنك تريد حذف جميع المنتجات؟ هذا الإجراء لا يمكن التراجع عنه.");
+  
+    if (confirmDelete) {
+      const confirmSecDelete = window.confirm("الان سيتم حذف جميع المنتجات!!!!!!");
+      if(confirmSecDelete){
+          try {
+            await delAllProduct();
+            refetch();
+            message.success("تم حذف جميع المنتجات بنجاح!");
+          } catch (error) {
+            message.error("فشل في حذف جميع المنتجات. يرجى المحاولة مرة أخرى.",error);
+          }
+        } else {
+          message.info("تم إلغاء عملية الحذف.");
+        }
 
-  const confirmDeleteProduct = () => {
-    setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productToDelete));
-    setOpenDeleteDialog(false);
-    setProductToDelete(null);
+      }
+  };
+  
+  const confirmDeleteProduct = async() => {
+     try {
+      await delProduct(productToDelete);
+      refetch();
+      setOpenDeleteDialog(false);
+      setProductToDelete(null);
+      message.success("Product deleted successfully!");
+    } catch (e) {
+      message.error("Something went wrong while deleting the category.",e);
+    }
   };
 
   const cancelDeleteProduct = () => {
@@ -197,23 +342,23 @@ const ProductsAdmin = () => {
     const header = [
       "id", "name_ar", "name_en", "desc_ar", "desc_en", 
       "mainPrice", "priceDiscount", "colors", "sizes", 
-      "stock", "barcode", "mainImage", "otherImage"
+      "stock", "barcode"
     ];
   
-    const rows = products.map((product) => [
+    const rows = categories.map((product) => [
       product.id,
       product.name_ar,
       product.name_en,
       product.desc_ar,
       product.desc_en,
-      product.mainPrice,
-      product.priceDiscount,
+      product.main_price,
+      product.price_discount,
       (product.colors && Array.isArray(product.colors) ? product.colors.join("; ") : ""),
       (product.sizes && Array.isArray(product.sizes) ? product.sizes.join("; ") : ""),  
       product.stock,
       product.barcode,
-      product.mainImage,
-      product.otherImage,
+      // product.mainImage,
+      // product.otherImage,
     ]);
   
     let csvContent = header.join(",") + "\n";
@@ -233,67 +378,78 @@ const ProductsAdmin = () => {
     link.click();
   };
   
-
+  const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
   const columns = [
-    { field: "name_en", headerName: "Product Name (English)", flex: 1, minWidth: 250 },
-    { field: "name_ar", headerName: "Product Name (Arabic)", flex: 1, minWidth: 250 },
-    { field: "desc_ar", headerName: "Description (Arabic)", flex: 1, minWidth: 250 },
-    { field: "desc_en", headerName: "Description (English)", flex: 1, minWidth: 250 },
-    { field: "mainPrice", headerName: "Main Price", flex: 1, minWidth: 250 },
-    { field: "priceDiscount", headerName: "Price Discount", flex: 1, minWidth: 250 },
-    { field: "colors", headerName: "Colors", flex: 1, minWidth: 250 },
-    { field: "sizes", headerName: "Sizes", flex: 1, minWidth: 250 },
-    { field: "stock", headerName: "Stock", flex: 1, minWidth: 250 },
-    { field: "barcode", headerName: "Barcode", flex: 1, minWidth: 250 },
+    { title: "Product Name (Arabic)", dataIndex: "name_ar", key: "name_ar", render: (text) => text },
+    { title: "Product Name (English)", dataIndex: "name_en", key: "name_en", render: (text) => text },
+    { title: "Main Price", dataIndex: "main_price", key: "main_price", render: (text) => text },
+    { title: "Price Discount", dataIndex: "price_discount", key: "price_discount", render: (text) => text },
+    { title: "Stock", dataIndex: "stock", key: "stock", render: (text) => text },
     {
-      field: "mainImage",
-      headerName: "Main Image",
-      renderCell: (params) => (
-        <img 
-          src={params.value} 
-          alt="product" 
-          style={{ width: 45, height: 45, objectFit: 'cover', borderRadius: '50px' }} 
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => (
+        <img
+          src={image}
+          alt="category"
+          style={{ width: 45, height: 45, objectFit: "cover", borderRadius: "50px" }}
         />
       ),
-      flex: 1,
-      minWidth: 250 
     },
     {
-      field: "actions",
-      headerName: "Actions",
-      renderCell: (params) => (
+      title: "Actions",
+      key: "actions",
+      render: (_, record) =>  IsAvailable?null:(
         <>
           <Button
-            onClick={() => handleEditProduct(params.row)}
-            style={{ color: "green" }}
-            startIcon={<CiEdit />}
-          >
-          </Button>
+            onClick={() => handleEditProduct(record)}
+            style={{ color: "green", marginRight: 10 }}
+            icon={<CiEdit />}
+            loading={loadingUpdate}
+          ><CiEdit/></Button>
           <Button
-            onClick={() => handleDeleteProduct(params.row.id)}
+            onClick={() => handleDeleteProduct(record.id)}
             style={{ color: "red" }}
-            startIcon={<MdDelete />}
-          >
-          </Button>
+            icon={<MdDelete />}
+            loading={loadingDel} 
+          ><MdDelete/></Button>
+            <Button
+            onClick={() => handleShowProduct(record)}
+            style={{ color: "#333" }}
+          ><FaRegEye/></Button>
         </>
       ),
-      flex: 1,
-      minWidth: 200,
     },
   ];
+
+  const rowClassName = (record, index) => {
+    return index % 2 !== 0 ? "even-row" : "";
+  };
+
 
   return (
     <>
       <Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleOpenModal}
-        sx={{ marginBottom: 2 }}
+      <div style={{padding:10,marginBottom:20}}>
+      <Link
+      to={'/dashboard/admin/control/ProductSearch'}
+      className="banner-button"
       >
-        Add Product
-      </Button>
-
+        Search Product
+      </Link>      
+      </div>
+      {!IsAvailable && (
+        <>        
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenModal}
+            sx={{ marginBottom: 2 }}
+          >
+            Add Product
+          </Button>
       <Button
         variant="outlined"
         color="secondary"
@@ -302,30 +458,56 @@ const ProductsAdmin = () => {
       >
         Export to CSV
       </Button>
+      {categories.length > 0 && (
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleAllDeleteProduct}
+          sx={{ marginBottom: 2, marginLeft: 2 }}
+          loading={loadingAllDel}
+        >
+          Delete All Product
+        </Button>
+      )}
+        </>
+      )}
+
       </Box>
-      <div style={{ height: 400, width: "100%" }}>
-        <DataGrid rows={products} columns={columns} pageSize={5} 
-          rowsPerPageOptions={[5, 10, 15]}
-          checkboxSelection
-          disableSelectionOnClick/>
-      </div>
+      <Box sx={{ height: "auto", width: "100%" }} className="cta">
+        <Table
+          dataSource={categories}
+          columns={columns}
+          rowKey="id"
+          loading={isLoading}
+          rowClassName={rowClassName}
+          pagination={{
+            total: data?.products?.total || 0,
+            current: currentPage,
+            pageSize: pageSize,
+            onChange: (page) => {
+              setCurrentPage(page);
+              refetch();
+            },
+          }}
+        />
+      </Box>
       <StyledModal open={isModalVisible} onClose={handleCloseModal} sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } }}>  
         <StyledBox>
           <Typography variant="h6">{editingProduct ? "Edit Product" : "Add Product"}</Typography>
           <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } , gap:2}}>
-          <FormControl fullWidth margin="normal" error={!!errors.name_ar} >
+          <FormControl fullWidth margin="normal" error={!!errors.category_id} >
   <InputLabel>Category Name</InputLabel>
   <Select
-    name="ctaName_ar"
-    value={formValues.name_ar}
+    name="category_id"
+    value={formValues.category_id}
     onChange={handleInputChange}
     label="Category Name"
   >
-    <MenuItem value="option1">Option 1</MenuItem>
-    <MenuItem value="option2">Option 2</MenuItem>
-    <MenuItem value="option3">Option 3</MenuItem>
+    {categoryData?.categories?.map((cta,index)=>(
+      <MenuItem key={index} value={cta?.id}>{cta?.name_ar || cta?.name_en}</MenuItem>
+    ))}
   </Select>
-  <FormHelperText>{errors.name_ar}</FormHelperText>
+  <FormHelperText>{errors.category_id}</FormHelperText>
 </FormControl>
             <TextField
                 name="name_ar"
@@ -375,21 +557,21 @@ const ProductsAdmin = () => {
 
           <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } , gap:2}}>
             <TextField
-                name="mainPrice"
+                name="main_price"
                 label="Main Price"
                 fullWidth
                 margin="normal"
-                value={formValues.mainPrice}
+                value={formValues.main_price}
                 onChange={handleInputChange}
                 error={!!errors.mainPrice}
                 helperText={errors.mainPrice}
             />
             <TextField
-                name="priceDiscount"
+                name="price_discount"
                 label="Price Discount"
                 fullWidth
                 margin="normal"
-                value={formValues.priceDiscount}
+                value={formValues.price_discount}
                 onChange={handleInputChange}
                 error={!!errors.priceDiscount}
                 helperText={errors.priceDiscount}
@@ -402,14 +584,14 @@ const ProductsAdmin = () => {
         label="Colors"
         fullWidth
         margin="normal"
-        value={formValues.colors.join(', ')}
+        value={formValues?.colors?.join(', ') || ''}
         onChange={handleInputChange}
         error={!!errors.colors}
         helperText={errors.colors}
         disabled
       />
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column" } , gap:2}}>
-        {colors.map((color, index) => (
+        {colors?.map((color, index) => (
             <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
             <input
                 type="color"
@@ -460,6 +642,7 @@ const ProductsAdmin = () => {
                 label="Stock"
                 fullWidth
                 margin="normal"
+                type="number"
                 value={formValues.stock}
                 onChange={handleInputChange}
                 error={!!errors.stock}
@@ -479,16 +662,7 @@ const ProductsAdmin = () => {
 
           <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" } , gap:2}}>
           <FormControl fullWidth error={Boolean(errors.mainImage)} margin="normal">
-            <input
-              type="file"
-              name="mainImage"
-              accept="image/*"
-              onChange={handleInputChange}
-              style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
-            />
-            {errors.mainImage && <FormHelperText>{errors.mainImage}</FormHelperText>}
-          </FormControl>
-          <FormControl fullWidth error={Boolean(errors.image)} margin="normal">
+            <label htmlFor="" style={{marginBottom:10}}>Main Image</label>
             <input
               type="file"
               name="image"
@@ -496,15 +670,66 @@ const ProductsAdmin = () => {
               onChange={handleInputChange}
               style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
             />
-            {errors.image && <FormHelperText>{errors.image}</FormHelperText>}
+            {errors.mainImage && <FormHelperText>{errors.mainImage}</FormHelperText>}
           </FormControl>
           </Box>
+          <Box mt={2}>
+  <label htmlFor="image-input">
+    <Button variant="outlined" component="span">
+      <IoIosAdd /> Add Other Image
+    </Button>
+  </label>
+  <input
+    id="image-input"
+    type="file"
+    accept="image/*"
+    style={{ display: "none" }}
+    onChange={handleAddImage}
+    multiple
+  />
+</Box>
+
+{Array.isArray(formValues?.OtherImage) && formValues.OtherImage.length > 0 && (
+  <Box display="flex" flexWrap="wrap" gap={2} mt={2}>
+    {formValues.OtherImage.map((file, index) => (
+      <Box key={index} position="relative">
+        <img
+          src={file instanceof File ? URL.createObjectURL(file) : file || ''}
+          alt={`Uploaded ${index}`}
+          style={{
+            width: "120px",
+            height: "120px",
+            objectFit: "cover",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => handleRemoveImage(index)}
+          style={{
+            marginLeft: "10px",
+            width: "30px",
+            height: "30px",
+            minWidth: 'auto',
+            fontSize: '28px',
+            padding: '7px',
+          }}
+        >
+          <MdDeleteOutline />
+        </Button>
+      </Box>
+    ))}
+  </Box>
+)}
+
 
           <Box sx={{ display: "flex", justifyContent: "flex-start", marginTop: 2 }}>
             <Button variant="outlined" color="secondary" onClick={handleCloseModal} sx={{ marginRight: 2 }}>
               Cancel
             </Button>
-            <Button variant="contained" color="primary" onClick={handleAddOrEditProduct}>
+            <Button variant="contained" color="primary" isLoading={loadingSave} onClick={handleAddOrEditProduct}>
               Save
             </Button>
           </Box>
@@ -517,9 +742,14 @@ const ProductsAdmin = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDeleteProduct} color="primary">Cancel</Button>
-          <Button onClick={confirmDeleteProduct} color="secondary">Delete</Button>
+          <Button onClick={confirmDeleteProduct} color="secondary" isLoading={loadingDel}>Delete</Button>
         </DialogActions>
       </Dialog>
+      <ProductsModal
+        isModalVisible={isModalVisibleP}
+        handleCloseModal={handleCloseModalP}
+        showProduct={showProduct}
+      />
     </>
   );
 };

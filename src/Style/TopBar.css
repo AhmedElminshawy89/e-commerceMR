@@ -71,7 +71,7 @@ margin: 0 auto;
 }
 
 .logo-container p {
-  font-size: var(--font-size-large);
+  font-size: 27px;
   font-weight: bold;
   color: var(--mint-green); 
 }

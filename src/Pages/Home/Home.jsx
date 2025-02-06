@@ -10,6 +10,7 @@ import ContactBanner from '../../components/BannerContact';
 import WhyUsSection from '../../components/WhyUsSection';
 
 const Home = () => {
+
   return (
     <>
       <Banner />          

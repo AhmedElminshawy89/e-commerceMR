@@ -10,8 +10,8 @@ import store from './app/Store.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-        <Provider store={store}>
-          <App />
-        </Provider>
+    <Provider store={store}>
+        <App /> 
+    </Provider>
   </StrictMode>
 );

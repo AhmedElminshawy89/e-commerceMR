@@ -1,15 +1,10 @@
-import  { useState } from "react";
 import { Box, Grid, Card, Typography, CardContent } from "@mui/material";
 import { FaUsers, FaBox, FaShoppingCart, FaDollarSign } from "react-icons/fa";
 import UserDetails from "./Users";
+import { useShowAllAdminGetDashboardStatsQuery } from "../../app/Api/SiteDetails";
 
 const DashboardIndex = () => {
-  const [data, setData] = useState({
-    clients: 250,
-    products: 1200,
-    orders: 500,
-    sales: 85000,
-  });
+  const { data } = useShowAllAdminGetDashboardStatsQuery()
 
 
   return (
@@ -29,7 +24,7 @@ const DashboardIndex = () => {
               <Typography variant="h6" sx={{ marginTop: 1, fontWeight: 'bold' }}>
                 Clients
               </Typography>
-              <Typography variant="h4">{data.clients}</Typography>
+              <Typography variant="h4">{data?.dashboard_stats?.total_users}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -48,7 +43,7 @@ const DashboardIndex = () => {
               <Typography variant="h6" sx={{ marginTop: 1, fontWeight: 'bold' }}>
                 Products
               </Typography>
-              <Typography variant="h4">{data.products}</Typography>
+              <Typography variant="h4">{data?.dashboard_stats?.total_products}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -67,7 +62,7 @@ const DashboardIndex = () => {
               <Typography variant="h6" sx={{ marginTop: 1, fontWeight: 'bold' }}>
                 Orders
               </Typography>
-              <Typography variant="h4">{data.orders}</Typography>
+              <Typography variant="h4">{data?.dashboard_stats?.total_orders}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -86,7 +81,7 @@ const DashboardIndex = () => {
               <Typography variant="h6" sx={{ marginTop: 1, fontWeight: 'bold' }}>
                 Sales
               </Typography>
-              <Typography variant="h4">${data.sales.toLocaleString()}</Typography>
+              <Typography variant="h4">{data?.dashboard_stats?.total_sellers}</Typography>
             </CardContent>
           </Card>
         </Grid>

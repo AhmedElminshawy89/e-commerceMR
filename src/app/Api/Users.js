@@ -7,7 +7,7 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
       const language = localStorage.getItem('userLanguage') || "EN";
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
@@ -53,6 +53,13 @@ export const userApi = createApi({
           body: user,
         }),
       }),
+      changePassword: builder.mutation({
+        query: (user) => ({
+          url: '/auth/changePassword',
+          method: 'POST',
+          body: user,
+        }),
+      }),
       resetPassword: builder.mutation({
         query: (user) => ({
           url: '/auth/reset-password',
@@ -60,7 +67,34 @@ export const userApi = createApi({
           body: user,
         }),
       }),
+      updateUser: builder.mutation({
+        query: (updateUser) => ({
+          url: '/auth/updateProfile',
+          method: 'POST',
+          body: updateUser,
+        }),
+      }),
+      showAllAdminUsers: builder.query({
+        query: (page) => ({
+          url: `/auth/showAll?page=${page}`,
+          method: 'GET',
+        }),
+      }),
+      showAllAdminUsersSearch: builder.query({
+        query: ({phone,name}) => ({
+          url: `/auth/searchUsers?phone=${phone}&name=${name}`,
+          method: 'GET',
+        }),
+      }),
+      showSingleUser: builder.query({
+        query: () => ({
+          url: `/auth/singleUser`,
+          method: 'GET',
+        }),
+      }),
   }),
 });
 
-export const { useAddUserMutation  , useVerifyUserMutation,useResendOtpMutation , useLoginUserMutation , useForgetPasswordMutation , useResetPasswordMutation} = userApi;
+export const { useAddUserMutation  , useVerifyUserMutation,useResendOtpMutation , useLoginUserMutation , useForgetPasswordMutation , useResetPasswordMutation , useShowAllAdminUsersQuery,
+  useUpdateUserMutation,useChangePasswordMutation,useShowSingleUserQuery,useShowAllAdminUsersSearchQuery
+} = userApi;

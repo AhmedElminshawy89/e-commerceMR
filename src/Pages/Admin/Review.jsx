@@ -1,52 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Box } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { Table } from "antd";
+import { useShowAllAdminReviewQuery } from "../../app/Api/Review";
 
 const Reviews = () => {
-  const [reviews, setReviews] = useState([]);
-
-  useEffect(() => {
-    const initialData = [
-      { 
-        id: 1, 
-        customerName: "John Doe", 
-        rating: 5, 
-        reviewText: "Excellent service!", 
-        productName: "Wireless Earbuds" 
-      },
-      { 
-        id: 2, 
-        customerName: "Jane Smith", 
-        rating: 4, 
-        reviewText: "Great product, but shipping was delayed.", 
-        productName: "Bluetooth Speaker" 
-      },
-      { 
-        id: 3, 
-        customerName: "Michael Johnson", 
-        rating: 3, 
-        reviewText: "Average quality, not worth the price.", 
-        productName: "Smart Watch" 
-      },
-    ];
-    setReviews(initialData);
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: ReviewData, isLoading } = useShowAllAdminReviewQuery(currentPage);
+  const pageSize = 10;
 
   const columns = [
-    { field: "customerName", headerName: "Customer Name", flex: 1, minWidth: 150 },
-    { field: "productName", headerName: "Product Name", flex: 1, minWidth: 150 },
-    { field: "rating", headerName: "Rating", flex: 0.5, minWidth: 100, type: "number" },
-    { field: "reviewText", headerName: "Review", flex: 2, minWidth: 300 },
+    { title: "Customer Name", dataIndex: "user", key: "user.name",render: (user) => user?.name, width: 150 },
+    { title: "Product Name", dataIndex: "product", key: "product.name_en",render: (product) => product?.name_en, width: 150 },
+    { title: "Rating", dataIndex: "rating", key: "rating", width: 100 },
+    { title: "Review", dataIndex: "comment", key: "comment", width: 300 },
   ];
-
+  const rowClassName = (record, index) => {
+    return index % 2 !== 0 ? "even-row" : "";
+  };
   return (
-    <Box sx={{ height: 500, width: "100%" }}>
-      <DataGrid 
-        rows={reviews} 
-        columns={columns} pageSize={5} 
-          rowsPerPageOptions={[5, 10, 15]}
-          checkboxSelection
-          disableSelectionOnClick
+    <Box sx={{ height: 500, width: "100%" }}  className="cta">
+      <Table
+        dataSource={ReviewData?.data?.review?.data || []}
+        columns={columns}
+        rowKey="id"
+        rowClassName={rowClassName}
+        loading={isLoading}
+        pagination={{
+          total: ReviewData?.data?.review?.total || 0,
+          current: currentPage,
+          pageSize: pageSize,
+          onChange: (page) => setCurrentPage(page),
+        }}
       />
     </Box>
   );

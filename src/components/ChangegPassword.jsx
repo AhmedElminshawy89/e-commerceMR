@@ -1,70 +1,68 @@
 import { Form, Input, Button, notification } from "antd";
 import TitleSection from "../Shared/TitleSection";
+import { useChangePasswordMutation } from "../app/Api/Users";
+import { useTranslation } from "react-i18next";
 
 const ChangePassword = () => {
   const [form] = Form.useForm();
+  const [updatePassword, { isLoading }] = useChangePasswordMutation();
+  const { i18n } = useTranslation()
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const { newPassword, confirmPassword } = values;
+
     if (newPassword !== confirmPassword) {
       notification.error({
-        message: "Error",
-        description: "The new password and confirmation do not match.",
+        message: i18n.language==="EN"?"Error":"خطا",
+        description: i18n.language==="EN"?"The new password and confirmation do not match.":"كلمة المرور الجديدة والتأكيد غير متطابقين.",
       });
       return;
     }
 
-    notification.success({
-      message: "Password Updated",
-      description: "Your password has been successfully updated.",
-    });
-    console.log("Password Update Data: ", values);
+    try {
+      await updatePassword({ password: newPassword,password_confirmation:confirmPassword}).unwrap();
+      notification.success({
+        message: i18n.language==="EN"?"Password Updated":"تم تحديث كلمة المرور",
+        description: i18n.language==="EN"?"Your password has been successfully updated.":"لقد تم تحديث كلمة المرور الخاصة بك بنجاح.",
+      });
+      form.resetFields();
+    } catch (error) {
+      notification.error({
+        message: i18n.language==="EN"?"Error":"خطا",
+        description: error?.data?.message || "",
+      });
+    }
   };
 
   return (
     <div style={{ padding: "20px", margin: "auto" }}>
-      <TitleSection title="Change Password" />
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        style={{ margin: "auto" }}
-      >
-        {/* <Form.Item
-          label="Current Password"
-          name="currentPassword"
-          rules={[
-            { required: true, message: "Please enter your current password" },
-          ]}
-        >
-          <Input.Password placeholder="Enter current password" />
-        </Form.Item> */}
-
+      <TitleSection title={i18n.language==="EN"?"Change Password":"تغيير كلمة المرور"} />
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item
-          label="New Password"
+          label={i18n.language==="EN"?"New Password":"كلمة المرور الجديدة"}
           name="newPassword"
           rules={[
-            { required: true, message: "Please enter a new password" },
-            { min: 8, message: "Password must be at least 8 characters long" },
+            { required: true, message: i18n.language==="EN"?"Please enter a new password":"الرجاء إدخال كلمة مرور جديدة" },
+            { min: 8, message: i18n.language==="EN"?"Password must be at least 8 characters long":"يجب أن تتكون كلمة المرور من 8 أحرف على الأقل" },
           ]}
         >
-          <Input.Password placeholder="Enter new password" />
+          <Input.Password placeholder={i18n.language==="EN"?"Enter new password":"أدخل كلمة المرور الجديدة"} />
         </Form.Item>
 
         <Form.Item
-          label="Confirm New Password"
+          label={i18n.language==="EN"?"Confirm New Password":"تأكيد كلمة المرور الجديدة"}
           name="confirmPassword"
           rules={[
-            { required: true, message: "Please confirm your new password" },
-            { min: 8, message: "Password must be at least 8 characters long" },
+            { required: true, message: i18n.language==="EN"?"Please confirm your new password":"الرجاء تأكيد كلمة المرور الجديدة الخاصة بك" },
+            { min: 8, message: i18n.language==="EN"?"Password must be at least 8 characters long":"يجب أن تتكون كلمة المرور من 8 أحرف على الأقل" },
           ]}
         >
-          <Input.Password placeholder="Confirm new password" />
+          <Input.Password placeholder={i18n.language==="EN"?"Confirm new password":"تأكيد كلمة المرور الجديدة"} />
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block className="banner-button">
-            Update Password
+          <Button type="primary" htmlType="submit" block className="banner-button" loading={isLoading}>
+            {i18n.language==="EN"?"Update Password":"تحديث كلمة المرور"}
           </Button>
         </Form.Item>
       </Form>

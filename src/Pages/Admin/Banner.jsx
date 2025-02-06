@@ -52,7 +52,6 @@ const Banner = () => {
   const [updateStatusServices, {isLoading:loadingStatus}] = useUpdateStatusBannerMutation();
   const [delServices, {isLoading:loadingDel}] = useDelBannerMutation();
   const { data: banner, error, isLoading ,refetch} = useShowAllAdminBannerQuery(currentPage); 
-  console.log(banner)
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
@@ -66,12 +65,23 @@ const Banner = () => {
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
+    
     if (name === "image") {
-      setFormValues({ ...formValues, image: files[0] });
+      const file = files[0];
+      
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      
+      if (file && !allowedTypes.includes(file.type)) {
+        message.warning('The image must be a file of type: jpg, jpeg, png, gif.');
+        return; 
+      }
+      
+      setFormValues({ ...formValues, image: file });
     } else {
       setFormValues({ ...formValues, [name]: value });
     }
   };
+  
 
   const validateForm = () => {
     const newErrors = {};
@@ -154,7 +164,8 @@ const Banner = () => {
       message.error("Error updating banner status",error);
     });
   };
-  
+    const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
 
   const columns = [
     { title: "title (Arabic)", dataIndex: "tittle_ar", key: "tittle_ar", render: (text) => text ,minWidth:150},
@@ -168,7 +179,8 @@ const Banner = () => {
       dataIndex: "status",
       key: "status",
       title: "Status",
-      render: (_, record) => (
+      render: (_, record) =>
+        IsAvailable?null: (
         <Button
           variant="outlined"
           color={record.status==='on' ? "success" : "error"}
@@ -220,9 +232,11 @@ const Banner = () => {
   };
   return (
     <Box sx={{ height: 500, width: "100%" }}>
-      <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{ marginBottom: 2 }}      >
-        Add Banner
-      </Button>
+      {!IsAvailable && (
+        <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{ marginBottom: 2 }}      >
+          Add Banner
+        </Button>
+      )}
 
       <Box sx={{ height: "auto", width: "100%" }} className="cta">
         <Table

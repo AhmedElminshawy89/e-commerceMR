@@ -1,65 +1,46 @@
-import { useState, useEffect } from "react";
-import { Box, Avatar } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { useState } from "react";
+import { Box } from "@mui/material";
+import { Table } from "antd";
+import { useShowAllAdminUsersQuery } from "../../app/Api/Users";
+import { Link } from "react-router-dom";
 
 const UserDetails = () => {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    const initialData = [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "johndoe@example.com",
-        phone: "+1234567890",
-        gender: "Male",
-        country: "USA",
-        city: "New York",
-        avatar: "https://via.placeholder.com/50",
-      },
-      {
-        id: 2,
-        name: "Jane Smith",
-        email: "janesmith@example.com",
-        phone: "+9876543210",
-        gender: "Female",
-        country: "UK",
-        city: "London",
-        avatar: "https://via.placeholder.com/50",
-      },
-      {
-        id: 3,
-        name: "Michael Johnson",
-        email: "michaeljohnson@example.com",
-        phone: "+1928374650",
-        gender: "Male",
-        country: "Canada",
-        city: "Toronto",
-        avatar: "https://via.placeholder.com/50",
-      },
-    ];
-    setUsers(initialData);
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: ReviewData, isLoading } = useShowAllAdminUsersQuery(currentPage);
+  const pageSize = 10;
 
   const columns = [
-    { field: "avatar", headerName: "Avatar", flex: 0.5, minWidth: 100, renderCell: (params) => <Avatar src={params.value} alt="Avatar" /> },
-    { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
-    { field: "email", headerName: "Email", flex: 1.5, minWidth: 200 },
-    { field: "phone", headerName: "Phone", flex: 1, minWidth: 150 },
-    { field: "gender", headerName: "Gender", flex: 0.5, minWidth: 100 },
-    { field: "country", headerName: "Country", flex: 1, minWidth: 150 },
-    { field: "city", headerName: "City", flex: 1, minWidth: 150 },
+    { title: "Image", dataIndex: "image", key: "image",render:(data)=><img src={data} alt="" style={{ width: 45, height: 45, objectFit: "cover", borderRadius: "50px" }}/>, width: 100 },
+    { title: "Customer Name", dataIndex: "name", key: "name", width: 150 },
+    { title: "Email", dataIndex: "email", key: "email", width: 150 },
+    { title: "Phone", dataIndex: "phone", key: "phone", width: 100 },
+    { title: "Gender", dataIndex: "gender", key: "gender", width: 100 },
   ];
-
+  const rowClassName = (record, index) => {
+    return index % 2 !== 0 ? "even-row" : "";
+  };
   return (
-    <Box sx={{ height: 500, width: "100%" }}>
-      <DataGrid
-        rows={users}
+    <Box sx={{ height: 500, width: "100%" }}  className="cta">
+            <div style={{padding:10,marginBottom:20}}>
+      <Link
+      to={'/dashboard/admin/control/UserSearch'}
+      className="banner-button"
+      >
+        Search User
+      </Link>      
+      </div>
+      <Table
+        dataSource={ReviewData?.user?.data || []}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 15]}
-        checkboxSelection
-        disableSelectionOnClick
+        rowKey="id"
+        rowClassName={rowClassName}
+        loading={isLoading}
+        pagination={{
+          total: ReviewData?.user?.total || 0,
+          current: currentPage,
+          pageSize: pageSize,
+          onChange: (page) => setCurrentPage(page),
+        }}
       />
     </Box>
   );

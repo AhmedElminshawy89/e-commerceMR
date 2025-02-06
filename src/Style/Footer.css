@@ -111,4 +111,6 @@
       text-align: center;
     }
   }
-  
+  .newsletter-form input:focus{
+    outline: 2px solid var(--mint-green) !important;
+  }

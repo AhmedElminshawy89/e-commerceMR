@@ -50,6 +50,12 @@ export const AdvertisingApi = createApi({
         method: 'GET',
       }),
     }),
+    showAdvertise: builder.query({
+      query: () => ({
+        url: `/admin/advertise/showLand`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -59,4 +65,5 @@ export const {
  useUpdateStatusAdvertiseMutation,
  useDelAdvertiseMutation,
  useShowAllAdminAdvertiseQuery,
+ useShowAdvertiseQuery,
 } = AdvertisingApi;

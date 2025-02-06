@@ -116,7 +116,7 @@ html {
   justify-content:space-between;
   align-items:center
 }
-.title-container a{
+.title-container div{
   color: var(--mint-green);
   font-size: 18px;
   font-weight: 600;

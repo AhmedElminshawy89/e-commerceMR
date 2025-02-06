@@ -64,8 +64,18 @@ const Services = () => {
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
+    
     if (name === "image") {
-      setFormValues({ ...formValues, image: files[0] });
+      const file = files[0];
+      
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      
+      if (file && !allowedTypes.includes(file.type)) {
+        message.warning('The image must be a file of type: jpg, jpeg, png, gif.');
+        return; 
+      }
+      
+      setFormValues({ ...formValues, image: file });
     } else {
       setFormValues({ ...formValues, [name]: value });
     }
@@ -138,6 +148,10 @@ const Services = () => {
     setOpenDeleteDialog(false);
     setCategoryToDelete(null);
   };
+
+    const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
+  const IsAvailable = res==='Moderator'
+
   const columns = [
     { title: "title (Arabic)", dataIndex: "tittle_ar", key: "tittle_ar", render: (text) => text },
     { title: "title (English)", dataIndex: "tittle_en", key: "tittle_en", render: (text) => text },
@@ -158,7 +172,7 @@ const Services = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
+      render: (_, record) =>  IsAvailable?null:(
         <>
           <Button
             onClick={() => handleEditCategory(record)}
@@ -182,9 +196,11 @@ const Services = () => {
   };
   return (
     <Box sx={{ height: 500, width: "100%" }}>
+      {!IsAvailable && (
       <Button variant="contained" color="primary" onClick={handleOpenModal} sx={{ marginBottom: 2 }}      >
         Add Services
       </Button>
+      )}
 
       <Box sx={{ height: "auto", width: "100%" }} className="cta">
         <Table

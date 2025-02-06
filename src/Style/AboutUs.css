@@ -11,13 +11,15 @@
     justify-content: center;
     /* align-items: center; */
     flex-direction: row;
-    gap: 30px;
+    gap: 10px;
+    margin-bottom: 30px;
   }
   
   .about-us-left {
     flex: 1;
     display: flex;
   }
+
   
   .about-us-image {
     width: 100%;
@@ -27,6 +29,17 @@
     object-fit: cover;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   }
+
+  
+  .about-us-left .react-loading-skeleton{
+    width: 500px  !important;
+    height: 250px !important;
+    border-radius: 10px !important;
+    -webkit-border-radius: 10px !important;
+    -moz-border-radius: 10px !important;
+    -ms-border-radius: 10px !important;
+    -o-border-radius: 10px !important;
+}
   
   .about-us-right {
     flex: 1;

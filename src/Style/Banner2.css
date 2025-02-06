@@ -1,7 +1,9 @@
 .banner2-container {
     width: 100%;
-    height: 400px;
-    background: url('../assets/Img/banner2.avif') center/cover no-repeat; 
+    height: 450px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
     display: flex;
     align-items: center;
     justify-content: center;
