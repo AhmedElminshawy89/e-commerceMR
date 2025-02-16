@@ -2,8 +2,8 @@ import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { Box, Button, Modal, TextField, Typography, DialogActions, FormHelperText, FormControl } from "@mui/material";
 import { styled } from "@mui/system";
-import { message, Table } from "antd";
-import { useSaveOverAllInfoMutation, useShowAllAdminOverAllInfoQuery, useUpdateOverAllInfoMutation } from "../../app/Api/SiteDetails";
+import { message, Spin, Table } from "antd";
+import { useSaveOverAllInfoMutation, useShowAllAdminOverAllInfo2Query, useUpdateOverAllInfoMutation } from "../../app/Api/SiteDetails";
 import { FaMapMarkedAlt } from "react-icons/fa";
 
 const StyledModal = styled(Modal)({
@@ -11,6 +11,7 @@ const StyledModal = styled(Modal)({
   alignItems: "center",
   justifyContent: "center",
 });
+
 const StyledBox = styled(Box)({
   backgroundColor: "white",
   padding: "20px",
@@ -47,7 +48,7 @@ const OverAllInfo = () => {
   const [currentPage] = useState(1);
   const [saveServices, { isLoading: loadingSave }] = useSaveOverAllInfoMutation();
   const [updateServices, { isLoading: loading }] = useUpdateOverAllInfoMutation();
-  const { data: about, error, isLoading, refetch } = useShowAllAdminOverAllInfoQuery(currentPage);
+  const { data: about, error, isLoading, refetch } = useShowAllAdminOverAllInfo2Query(currentPage);
 
   const handleOpenModal = () => {
     setIsModalVisible(true);
@@ -208,7 +209,7 @@ const OverAllInfo = () => {
     onClick={handleOpenModal}
     sx={{ marginBottom: 2 }}
   >
-    Add Contact Information
+    Add Overall Information
   </Button>
 )}
 
@@ -227,7 +228,7 @@ const OverAllInfo = () => {
       <StyledModal open={isModalVisible} onClose={handleCloseModal}>
         <StyledBox>
           <Typography variant="h6" gutterBottom>
-            {editingCategory ? "Edit Contact Information" : "Add Contact Information"}
+            {editingCategory ? "Edit Overall Information" : "Add Overall Information"}
           </Typography>
           <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
             {["email", "phone"].map((field) => (
@@ -322,7 +323,7 @@ const OverAllInfo = () => {
                 Cancel
               </Button>
               <Button variant="contained" color="primary" loading={loadingSave} onClick={handleAddOrEditCategory}>
-                Save
+                Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
               </Button>
             </Box>
           </DialogActions>

@@ -10,7 +10,7 @@ import { IoIosAdd } from "react-icons/io";
 import { useShowCategoryQuery } from "../../app/Api/Categories";
 import { useDelAllProductsMutation, useDelProductsMutation, useSaveProductsMutation, useShowAllAdminProductsQuery,
    useUpdateProductMutation } from "../../app/Api/Product";
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { FaRegEye } from "react-icons/fa";
 
 import ProductsModal from '../../components/Modal/ProductsModal'
@@ -160,7 +160,7 @@ const ProductsAdmin = () => {
           ...prevValues,
           OtherImage: [
             ...(Array.isArray(prevValues.OtherImage) 
-              ? prevValues.OtherImage.filter(image => typeof image === 'object' || image.url) 
+              ? prevValues.OtherImage.filter(image => image.url) 
               : []), 
             ...Array.from(files),
           ],
@@ -169,7 +169,7 @@ const ProductsAdmin = () => {
         setFormValues((prevValues) => ({
           ...prevValues,
           OtherImage: [
-            ...(Array.isArray(prevValues.OtherImage) ? prevValues.OtherImage : []), // التأكد من أن OtherImage مصفوفة
+            ...(Array.isArray(prevValues.OtherImage) ? prevValues.OtherImage : []),
             file,
           ],
         }));
@@ -432,14 +432,6 @@ const ProductsAdmin = () => {
   return (
     <>
       <Box>
-      <div style={{padding:10,marginBottom:20}}>
-      <Link
-      to={'/dashboard/admin/control/ProductSearch'}
-      className="banner-button"
-      >
-        Search Product
-      </Link>      
-      </div>
       {!IsAvailable && (
         <>        
           <Button
@@ -458,6 +450,11 @@ const ProductsAdmin = () => {
       >
         Export to CSV
       </Button>
+      <Link to='/dashboard/admin/control/ProductSearch'>
+  <Button variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+  Search Product
+  </Button>
+</Link>
       {categories.length > 0 && (
         <Button
           variant="outlined"
@@ -466,7 +463,7 @@ const ProductsAdmin = () => {
           sx={{ marginBottom: 2, marginLeft: 2 }}
           loading={loadingAllDel}
         >
-          Delete All Product
+          Delete All Product {loadingAllDel&&<Spin/>}
         </Button>
       )}
         </>
@@ -730,7 +727,7 @@ const ProductsAdmin = () => {
               Cancel
             </Button>
             <Button variant="contained" color="primary" isLoading={loadingSave} onClick={handleAddOrEditProduct}>
-              Save
+              Save  {loadingSave&&<Spin/>} {loadingUpdate&&<Spin/>}
             </Button>
           </Box>
         </StyledBox>
@@ -741,8 +738,8 @@ const ProductsAdmin = () => {
           Are you sure you want to delete this product?
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDeleteProduct} color="primary">Cancel</Button>
-          <Button onClick={confirmDeleteProduct} color="secondary" isLoading={loadingDel}>Delete</Button>
+          <Button onClick={cancelDeleteProduct}  variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>Cancel</Button>
+          <Button onClick={confirmDeleteProduct}  variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }} isLoading={loadingDel}>Delete  {loadingDel&&<Spin/>}</Button>
         </DialogActions>
       </Dialog>
       <ProductsModal

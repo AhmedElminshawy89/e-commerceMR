@@ -5,8 +5,12 @@ import { useShowAllAdminGetDashboardStatsQuery } from "../../app/Api/SiteDetails
 
 const DashboardIndex = () => {
   const { data } = useShowAllAdminGetDashboardStatsQuery()
+  const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
 
-
+  if (res === "Sales") {
+      window.location.href = "/dashboard/admin/control/Rev-sales";
+  }
+  
   return (
     <Box sx={{ padding: 3 }}>
       <Grid container spacing={3}>

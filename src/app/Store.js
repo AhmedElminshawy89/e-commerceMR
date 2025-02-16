@@ -16,8 +16,10 @@ import { whyUsApi } from "./Api/WhySection";
 import { featureApi } from "./Api/Feature";
 import { ContactUsSecApi } from "./Api/ContactUsSec";
 import { siteDetailsApi } from "./Api/SiteDetails";
+import cartReducer from './cartSlice'
 const store = configureStore({
   reducer: {
+    cart: cartReducer,
     [userApi.reducerPath]: userApi.reducer,
     [categoriesApi.reducerPath]: categoriesApi.reducer,
     [servicesApi.reducerPath]: servicesApi.reducer,

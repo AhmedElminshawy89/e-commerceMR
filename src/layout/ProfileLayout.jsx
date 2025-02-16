@@ -46,6 +46,22 @@ const ProfileLayout = () => {
           >
             {i18n.language === "EN" ? "My Orders" : "طلباتي"}
           </Link>
+          <Link
+            to="/my-account/member-by-member"
+            className={`btn-profile ${
+              location.pathname === "/my-account/member-by-member" && "active"
+            }`}
+          >
+            {i18n.language === "EN" ? "Member Get Member" : "عضو احصل على عضو"}
+          </Link>
+          <Link
+            to="/my-account/referral-purchases"
+            className={`btn-profile ${
+              location.pathname === "/my-account/referral-purchases" && "active"
+            }`}
+          >
+            {i18n.language === "EN" ? "Referral Purchases" : "مشتريات الإحالة"}
+          </Link>
           <Link to="/cart" className="btn-profile">
             {i18n.language === "EN" ? "My Cart" : "سلة التسوق الخاصة بي"}
           </Link>

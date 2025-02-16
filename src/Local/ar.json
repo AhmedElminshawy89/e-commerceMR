@@ -70,6 +70,7 @@
     "Home":"الصفحه الرئيسيه",
     "Products":"المنتجات",
     "About":"معلومات عنا",
+  "Item":"المنتج",
     "Contact":"تواصل بنا",
     "Cart Updated": "تم تحديث السلة",
   "Item Removed": "تم إزالة العنصر",
@@ -133,6 +134,8 @@
   "Please enter your postal code.": "يرجى إدخال الرمز البريدي.",
   "Please enter your email address.": "يرجى إدخال البريد الإلكتروني.",
   "Please enter a valid email address.": "يرجى إدخال بريد إلكتروني صالح.",
-  "Please enter your phone number.": "يرجى إدخال رقم الهاتف."
+  "Please enter your phone number.": "يرجى إدخال رقم الهاتف.",
+  "Total After Discount":"الإجمالي بعد الخصم"
+
   }
   

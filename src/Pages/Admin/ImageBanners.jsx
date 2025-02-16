@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { Box, Button, Modal, TextField, Typography, DialogActions, FormHelperText, FormControl } from "@mui/material";
 import { styled } from "@mui/system";
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { useSaveImageBannersMutation, useShowAllAdminImageBannersQuery, useUpdateImageBannersMutation } from "../../app/Api/SiteDetails";
 
 const StyledModal = styled(Modal)({
@@ -290,7 +290,7 @@ const ImageBanners = () => {
                 Cancel
               </Button>
               <Button variant="contained" color="primary" loading={loadingSave} onClick={handleAddOrEditCategory}>
-                Save
+                Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
               </Button>
             </Box>
           </DialogActions>

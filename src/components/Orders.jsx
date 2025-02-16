@@ -2,13 +2,12 @@ import { Table, Button, Space, Tag } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 import TitleSection from "../Shared/TitleSection";
 import { useTranslation } from "react-i18next";
-import { useShowPaymentQuery } from "../app/Api/Payments";
 import { useShowSingleUserQuery } from "../app/Api/Users";
+import logo from '../assets/Img/logo.jpg';
 
 const Orders = () => {
   const { i18n } = useTranslation();
-  const { data: SingleUser} = useShowSingleUserQuery();
-  const { data: orders , isLoading} = useShowPaymentQuery(SingleUser?.user?.code);
+  const { data: SingleUser , isLoading} = useShowSingleUserQuery();
 
   const columns = [
     {
@@ -36,7 +35,7 @@ const Orders = () => {
       dataIndex: "before_discount",
       key: "before_discount",
       render: (value) => {
-        return value / 100;
+        return value;
       },
     },
     {
@@ -73,33 +72,93 @@ const Orders = () => {
     generatePDF(order);
   };
 
-  const generatePDF = (order) => {
+  const generatePDF = (order, currency = "EGP") => {
     const { items, shipping_data, payment_method, before_discount, status, order_id, updated_at, discount } = order;
     
-    const isArabic = i18n.language!=="EN";
+    const isArabic = i18n.language !== "EN";
     const textAlign = isArabic ? "right" : "left";
     const direction = isArabic ? "rtl" : "ltr";
+    const formatCurrency = (value) => new Intl.NumberFormat(i18n.language, { style: "currency", currency }).format(value);
   
     let htmlContent = `
       <html>
         <head>
           <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
-            body { font-family: "Tahoma", "Arial", "Cairo", sans-serif; direction: ${direction}; text-align: ${textAlign}; }
-            .invoice-container { padding: 20px; max-width: 800px; margin: auto; border: 1px solid #ccc; border-radius: 10px; }
-            h1 { text-align: center; color: #4CAF50; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            th, td { padding: 8px; border: 1px solid #ddd; }
-            th { background-color: #f2f2f2; }
-            .total { font-size: 18px; font-weight: bold; color: #333; }
-            .btn-print { padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+            body {
+              font-family: "Tahoma", "Arial", "Cairo", sans-serif;
+              direction: ${direction};
+              text-align: ${textAlign};
+              background-color: #f9f9f9;
+              padding: 20px;
+            }
+            .invoice-container {
+              max-width: 800px;
+              margin: auto;
+              background: white;
+              padding: 20px;
+              border-radius: 10px;
+              box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 2px solid #eee;
+              padding-bottom: 15px;
+              margin-bottom: 20px;
+            }
+            .header img {
+              max-width: 80px;
+              height: auto;
+              border-radius: 50%;
+            }
+            .invoice-title {
+              font-size: 22px;
+              color: #333;
+              margin: 0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            th, td {
+              padding: 12px;
+              border-bottom: 1px solid #ddd;
+            }
+            th {
+              background-color: #f5f5f5;
+              color: #333;
+            }
+            .total {
+              font-size: 18px;
+              font-weight: bold;
+              margin-top: 20px;
+            }
+            .btn-print {
+              padding: 12px 20px;
+              font-size: 16px;
+              background-color: #007bff;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              display: block;
+              margin: 20px auto;
+            }
           </style>
         </head>
         <body>
           <div class="invoice-container">
-            <h1>${isArabic ? "فاتورة" : "Invoice"}</h1>
-            <p><strong>${isArabic ? "معرف الطلب:" : "Order ID:"}</strong> ${order_id}</p>
-            <p><strong>${isArabic ? "التاريخ:" : "Date:"}</strong> ${updated_at}</p>
+            <div class="header">
+              <img src="${logo}" alt="Company Logo">
+              <h1 class="invoice-title">${isArabic ? "فاتورة" : "Invoice"}</h1>
+            </div>
+  
+            <p><strong>${isArabic ? "رقم الطلب:" : "Order ID:"}</strong> ${order_id}</p>
+            <p><strong>${isArabic ? "التاريخ:" : "Date:"}</strong> ${new Date(updated_at).toLocaleDateString()}</p>
   
             <h3>${isArabic ? "عنوان الشحن:" : "Shipping Address:"}</h3>
             <p><strong>${isArabic ? "الاسم:" : "Name:"}</strong> ${shipping_data.first_name} ${shipping_data.last_name}</p>
@@ -107,19 +166,13 @@ const Orders = () => {
             <p><strong>${isArabic ? "الهاتف:" : "Phone:"}</strong> ${shipping_data.phone_number}</p>
             <p><strong>${isArabic ? "البريد الإلكتروني:" : "Email:"}</strong> ${shipping_data.email}</p>
   
-            <h3>${isArabic ? "طريقة الدفع:" : "Payment Method:"}</h3>
-            <p>${payment_method}</p>
-  
-            <h3>${isArabic ? "الحالة:" : "Status:"}</h3>
-            <p>${status}</p>
+            <p><strong>${isArabic ? "طريقة الدفع:" : "Payment Method:"}</strong> ${payment_method}</p>
+            <p><strong>${isArabic ? "الحالة:" : "Status:"}</strong> ${status}</p>
   
             <h3>${isArabic ? "العناصر:" : "Items:"}</h3>
             <table>
               <tr>
                 <th>${isArabic ? "اسم المنتج" : "Product Name"}</th>
-                <th>${isArabic ? "الوصف" : "Description"}</th>
-                <th>${isArabic ? "اللون" : "Color"}</th>
-                <th>${isArabic ? "الحجم" : "Size"}</th>
                 <th>${isArabic ? "السعر الفردي" : "Unit Price"}</th>
                 <th>${isArabic ? "الكمية" : "Quantity"}</th>
                 <th>${isArabic ? "الإجمالي" : "Total"}</th>
@@ -127,22 +180,17 @@ const Orders = () => {
               ${items.map(item => `
                 <tr>
                   <td>${item.name}</td>
-                  <td>${item.description}</td>
-                  <td>${item.color}</td>
-                  <td>${item.size}</td>
-                  <td>${(item.amount_cents / 100).toFixed(2)} EGP</td>
+                  <td>${formatCurrency(item.amount_cents)}</td>
                   <td>${item.quantity}</td>
-                  <td>${((item.amount_cents / 100) * item.quantity).toFixed(2)} EGP</td>
+                  <td>${formatCurrency(item.amount_cents * item.quantity)}</td>
                 </tr>
               `).join('')}
             </table>
   
-            <h3 class="total">${isArabic ? "الإجمالي (قبل الخصم):" : "Total (Before Discount):"} <span>${before_discount / 100} EGP</span></h3>
-            <h3 class="total">${isArabic ? "الإجمالي (بعد الخصم):" : "Total (After Discount):"} <span>${(before_discount / 100 - discount / 100)} EGP</span></h3>
+            <h3 class="total">${isArabic ? "الإجمالي (قبل الخصم):" : "Total (Before Discount):"} ${formatCurrency(before_discount)}</h3>
+            <h3 class="total">${isArabic ? "الإجمالي (بعد الخصم):" : "Total (After Discount):"} ${formatCurrency(before_discount - discount)}</h3>
   
-            <div style="text-align: center; margin-top: 20px;">
-              <button class="btn-print" onclick="window.print();">${isArabic ? "طباعة الفاتورة" : "Print Invoice"}</button>
-            </div>
+            <button class="btn-print" onclick="window.print();">${isArabic ? "طباعة الفاتورة" : "Print Invoice"}</button>
           </div>
         </body>
       </html>
@@ -154,12 +202,14 @@ const Orders = () => {
     newWindow.print();
   };
   
+  
+  
 
   return (
     <div style={{ padding: "20px" }}>
       <TitleSection title={i18n.language === "EN" ? "My Orders" : "طلباتي"} />
       <Table
-        dataSource={orders?.orders?.data}
+        dataSource={SingleUser?.user?.orders}
         columns={columns}
         isLoading={isLoading}
         pagination={{ pageSize: 5 }}

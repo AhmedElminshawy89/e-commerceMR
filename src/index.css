@@ -1,4 +1,4 @@
-*{
+@import url('https://fonts.googleapis.com/css2?family=Ropa+Sans:ital@0;1&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');*{
   padding:0;
   margin:0;
 }
@@ -6,9 +6,16 @@ a{
   text-decoration:none
 }
 
-  
-body {
-  font-family: var(--font-family);
+
+html[dir='ltr'] body {
+  font-family: "Ropa Sans", serif;
+  background-color: #f0f8f7;
+  color: #333;
+  overflow-x: hidden;
+}
+
+html[dir='rtl'] body {
+  font-family: "Tajawal", serif;
   background-color: #f0f8f7;
   color: #333;
   overflow-x: hidden;

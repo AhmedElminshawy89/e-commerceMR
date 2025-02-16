@@ -20,6 +20,7 @@ import {
 import { AiFillInteraction } from "react-icons/ai";
 import { TbDiscount } from "react-icons/tb";
 import { CiInboxOut } from "react-icons/ci";
+import { VscReferences } from "react-icons/vsc";
 
 import { MdDesignServices ,MdConnectWithoutContact, MdOutlineFeaturedPlayList,MdOutlineContactMail,MdOutlineMediation } from "react-icons/md";
 
@@ -62,6 +63,7 @@ const DashboardLayout = () => {
     { path: "/dashboard/admin/control/Rev-sales", label: "Rev Sales", icon: <CiMaximize1 className="icon" /> },
     { path: "/dashboard/admin/control/admin", label: "Admin", icon: <FaUserShield className="icon" /> },
     { path: "/dashboard/admin/control/user", label: "User", icon: <FaUser className="icon" /> },
+    { path: "/dashboard/admin/control/referred-customer", label: "Referred Customers", icon: <VscReferences className="icon" /> },
     // { path: "/", label: "Logout", icon: <CiLogin className="icon" /> , onClick: handleLogOut 
     // },
   ];
@@ -105,7 +107,7 @@ const DashboardLayout = () => {
       <aside className={`sidebar ${sidebar&&"small-sidebar"}`}>
         <h2 className="sidebar-heading">
             <img className="logo" src={logo} />
-            <p>M&R For Trading</p>
+            <p>M&R SHOP</p>
         </h2>
         <nav className="sidebar-nav">
         <ul>

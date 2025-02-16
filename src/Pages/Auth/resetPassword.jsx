@@ -13,7 +13,7 @@ const ResetPassword = () => {
   const [resendOtp] = useResendOtpMutation();
   const [timer, setTimer] = useState(() => {
     const savedTime = localStorage.getItem('otpTimer');
-    return savedTime ? parseInt(savedTime) : 180; 
+    return savedTime ? parseInt(savedTime) : 300; 
   }); 
 
   const { t , i18n} = useTranslation(); 
@@ -56,6 +56,7 @@ const ResetPassword = () => {
           description: t('otpVerified', { otp: otpValue }),
         });
         form.resetFields();
+        localStorage.removeItem('otpTimer')
         navigate('/login');
       } catch (error) {
         if (error.status === 400 && error.data?.error) {

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { Box, Button, Modal, TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle, FormHelperText, FormControl } from "@mui/material";
-import { styled, width } from "@mui/system";
+import { styled } from "@mui/system";
 import { MdDelete } from "react-icons/md";
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { useDelFeatureMutation, useSaveFeatureMutation, useShowAllAdminFeatureQuery, useUpdateFeaturesMutation } from "../../app/Api/Feature";
 
 const StyledModal = styled(Modal)({
@@ -302,7 +302,7 @@ const FeatureAdmin = () => {
               Cancel
             </Button>
             <Button variant="contained" color="primary" loading={loadingSave} onClick={handleAddOrEditCategory}>
-              Save
+              Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
             </Button>
           </Box>
           </DialogActions>
@@ -315,9 +315,9 @@ const FeatureAdmin = () => {
           <Typography>Are you sure you want to delete this Feature?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDeleteCategory}>Cancel</Button>
-          <Button onClick={confirmDeleteCategory} loading={loadingDel} color="error">
-            Delete
+          <Button onClick={cancelDeleteCategory}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>Cancel</Button>
+          <Button onClick={confirmDeleteCategory} loading={loadingDel}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Delete {loadingDel&&<Spin/>} 
           </Button>
         </DialogActions>
       </Dialog>

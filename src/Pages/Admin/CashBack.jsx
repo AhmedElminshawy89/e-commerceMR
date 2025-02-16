@@ -5,7 +5,7 @@ import { styled } from "@mui/system";
 import { MdDelete } from "react-icons/md";
 import { useSaveDiscountMutation, useUpdateDiscountMutation,
    useDelDiscountMutation, useShowDiscountQuery } from '../../app/Api/Discount';
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 
 const StyledModal = styled(Modal)({
   display: "flex",
@@ -42,9 +42,9 @@ const CashBack = () => {
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   const { data: cashbackData, refetch ,isLoading} = useShowDiscountQuery();
-  const [saveDiscount] = useSaveDiscountMutation();
-  const [updateDiscount] = useUpdateDiscountMutation();
-  const [delDiscount] = useDelDiscountMutation();
+  const [saveDiscount , {isLoading:loadingSave}] = useSaveDiscountMutation();
+  const [updateDiscount , {isLoading:loading}] = useUpdateDiscountMutation();
+  const [delDiscount , {isLoading:loadingDel}] = useDelDiscountMutation();
 
   console.log(cashbackData?.cashBack)
   useEffect(() => {
@@ -211,7 +211,7 @@ const CashBack = () => {
                 Cancel
               </Button>
               <Button variant="contained" color="primary" onClick={handleAddOrEditCategory}>
-                Save
+                Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
               </Button>
             </Box>
           </DialogActions>
@@ -224,9 +224,9 @@ const CashBack = () => {
           <Typography>Are you sure you want to delete this category?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDeleteCategory}>Cancel</Button>
-          <Button onClick={confirmDeleteCategory} color="error">
-            Delete
+          <Button onClick={cancelDeleteCategory}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>Cancel</Button>
+          <Button onClick={confirmDeleteCategory}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+          Delete {loadingDel&&<Spin/>} 
           </Button>
         </DialogActions>
       </Dialog>

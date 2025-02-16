@@ -1,34 +1,42 @@
 import { useEffect, useState } from "react";
 import { FaEnvelope, FaGlobe, FaPhoneAlt, FaUser, FaShoppingCart } from "react-icons/fa";
 import { Menu, Dropdown } from "antd"; 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useShowCartQuery } from "../app/Api/Cart";
 import "../Style/TopBar.css"; 
 import { useShowSingleUserQuery } from "../app/Api/Users";
 import { useShowAllAdminOverAllInfoQuery } from "../app/Api/SiteDetails";
+import { useSelector } from "react-redux";
 
 const TopBar = () => {
-  const lang = localStorage.getItem("userLanguage")
+  const lang = localStorage.getItem("userLanguage") || "EN"
+  const cartLength = useSelector((state) => state.cart.cartLength);
+
   const [language, setLanguage] = useState(lang);
   const { i18n } = useTranslation();
   const [cartCount, setCartCount] = useState(0);
   const { data } = useShowCartQuery();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: SingleUser} = useShowSingleUserQuery();
   const { data: Info} = useShowAllAdminOverAllInfoQuery();
   const token = document.cookie.split("; ").find(row => row.startsWith("token="))?.split("=")[1];
+  
 
   useEffect(() => {
     if (data?.data?.cartItems) {
-      setCartCount(data.data.cartItems.length);
+      setCartCount(token?data.data.cartItems.length:cartLength);
     }
-  }, [data]);
+  }, [cartLength, data, token]);
 
   const toggleLanguage = () => {
     const newLanguage = language === "EN" ? "AR" : "EN"; 
     setLanguage(newLanguage);
     i18n.changeLanguage(newLanguage);
+    if (/^\/product\/.+/.test(location.pathname)) {
+      navigate('/product');
+    }
     window.location.reload();
   };
 
@@ -117,7 +125,7 @@ const TopBar = () => {
 
         <div onClick={() => navigateWithRef("/cart")} className="icon-container">
           <FaShoppingCart className="icon"/>
-          <p>{cartCount}</p>
+          <p>{token?cartCount:cartLength}</p>
         </div>
       </div>
     </div>

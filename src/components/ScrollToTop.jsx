@@ -27,7 +27,7 @@ const ScrollToTop = () => {
 
   const buttonStyle = {
     position: "fixed",
-    bottom: "65px",
+    bottom: "105px",
     right: "20px", 
     backgroundColor: "var(--mint-green)",
     color: "white",
@@ -45,7 +45,7 @@ const ScrollToTop = () => {
 
   const whatsappStyle = {
     position: "fixed",
-    bottom: "20px", 
+    bottom: "60px", 
     right: "20px", 
     backgroundColor: "#25D366", 
     color: "white",

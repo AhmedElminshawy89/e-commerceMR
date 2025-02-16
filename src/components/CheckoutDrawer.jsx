@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Drawer, Form, Input, Radio, Button, notification } from "antd";
+import { Drawer, Form, Input, Radio, Button, notification, Spin } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSavePaymentCashOnDeliveryMutation, useSavePaymentPayMobMutation } from "../app/Api/Payments";
 import { useShowSingleUserQuery } from "../app/Api/Users";
@@ -10,18 +10,19 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
     type_user,
     cartItems}) => {
   const { t } = useTranslation();
-
+  
   const storedRef = localStorage.getItem('ref');
-  const [savePaymob] = useSavePaymentPayMobMutation()
-  const [saveCashOnDelivery] = useSavePaymentCashOnDeliveryMutation()
+  const [savePaymob , {isLoading }] = useSavePaymentPayMobMutation()
+  const [saveCashOnDelivery, {isLoading:loadingCash}] = useSavePaymentCashOnDeliveryMutation()
   const token = document.cookie.split("; ").find((row) => row.startsWith("token="))?.split("=")[1];
   const cartItemsData = token ? cartItems || [] : JSON.parse(localStorage.getItem("cart")) || [];
+  // const { refetch } = useShowCartQuery(null, { skip: !token });
   const { data: SingleUser} = useShowSingleUserQuery()
   const items = cartItemsData.map((item) => ({
     name: token ? item.product.name : item.product_name,
     amount_cents: token 
-      ? item.product.price_discount * 100 
-      : item.product_price * 100,
+      ? item.product.price_discount 
+      : item.product_price,
     quantity: item.quantity,
     color: item.color,
     size: item.size,
@@ -29,17 +30,17 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
   }));
   const handlePlaceOrder = async (values) => {
   
-    if (!token && values.payment_method === "paymob") {
-      window.location.href = "/login";
-      return;
-    }
+    // if (!token && values.payment_method === "paymob") {
+    //   window.location.href = "/login";
+    //   return;
+    // }
   
     const requestData = {
       amount_cents: amount_cents * 100,
       currency: "EGP",
       discount: discount * 100,
       before_discount: before_discount * 100,
-      userId: SingleUser?.user?.id,
+      userId: SingleUser?.user?.id || null,
       codeUser: storedRef,
       type_user,
       shipping_data: {
@@ -57,7 +58,9 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
         });
         setTimeout(() => {
           if (response?.url?.url) {
-            window.open(response.url.url, '_blank');
+            localStorage.removeItem("cart");
+            localStorage.removeItem("cartLength");
+            window.open(response.url.url, '_self');
           } else {
             notification.error({
               message: t("Invalid Response"),
@@ -65,12 +68,16 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
             });
           }
         }, 2000);
+        // refetch();
       } else if (values.payment_method === "cash_on_delivery") {
         await saveCashOnDelivery(requestData).unwrap();
         notification.success({
           message: t("Order Placed"),
           description: t("Your order for Cash on Delivery has been placed."),
         });
+        localStorage.removeItem("cart");
+        localStorage.removeItem("cartLength");  
+        window.location.reload();
       } else {
         throw new Error(t("Invalid payment method."));
       }
@@ -297,7 +304,7 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
           className="banner-button"
           htmlType="submit"
         >
-          {t("Place Order")}
+          {t("Place Order")} {isLoading&&<Spin/>} {loadingCash&&<Spin/>}  
         </Button>
       </Form>
     </Drawer>

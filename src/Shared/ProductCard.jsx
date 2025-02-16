@@ -5,10 +5,11 @@ import { FaCartPlus } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
 import { useAddToCartMutation, useShowCartQuery } from "../app/Api/Cart";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setCartLength } from "../app/cartSlice";
 
 const ProductCard = ({ product }) => {
   const { i18n } = useTranslation()
-
   const token = document.cookie.split('; ')?.find(row => row?.startsWith('token='))?.split('=')[1];
   const [addToCart, { isLoading: loadingCart }] = useAddToCartMutation()
 
@@ -17,12 +18,22 @@ const ProductCard = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const {refetch} = useShowCartQuery();
-
+  const dispatch = useDispatch();
+// const cartLength = useSelector((state) => state.cart.cartLength);
   const handleAddToCart = async () => {
     if (!selectedColor || !selectedSize) {
       message.error(i18n.language === "EN" ? "Please choose the color and size!" : "يرجى اختيار اللون والمقاس!");
       return;
     }
+    if (Number(product?.stock || 0) < (quantity || 0)) {
+      message.error(
+        i18n.language === "EN"
+          ? "Not enough stock for this product!"
+          : "لا يوجد مخزون كافٍ لهذا المنتج!"
+      );
+      return;
+    }
+    
 
     if (!token) {
       const cartData = {
@@ -33,10 +44,24 @@ const ProductCard = ({ product }) => {
         size: selectedSize,
         quantity,
       };
-
+      
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.push(cartData);
+      
+      const existingIndex = cart.findIndex(
+        (item) =>
+          item.product_id === cartData.product_id &&
+          item.color === cartData.color &&
+          item.size === cartData.size
+      );
+      
+      if (existingIndex !== -1) {
+        cart[existingIndex].quantity += cartData.quantity;
+      } else {
+        cart.push(cartData);
+      }
+      
       localStorage.setItem("cart", JSON.stringify(cart));
+      dispatch(setCartLength(cart.length));      
 
       message.success(i18n.language === "EN" ? "Item added to cart successfully!" : "تمت إضافة العنصر إلى السلة بنجاح!");
     } else {
@@ -77,7 +102,9 @@ const ProductCard = ({ product }) => {
           <div className="product-rating">
             <Rate disabled defaultValue={product.average_rating === 0 ? 1 : product.average_rating} />
           </div>
-          <p className="product-description">{product.desc}</p>
+          <p className="product-description">
+  {product.desc.length > 100 ? `${product.desc.slice(0, 100)}...` : product.desc}
+</p>
           <div className="price-section">
             <span className="original-price">{product.main_price}</span>
             <span className="discounted-price">{product.price_discount}</span>
@@ -110,8 +137,10 @@ const ProductCard = ({ product }) => {
         visible={isModalVisible}
         onCancel={handleCloseModal}
         onOk={handleAddToCart}
-        okText={i18n.language === 'EN' ? 'Add to cart' : 'أضف إلى السلة'}
-      >
+        okText={
+          loadingCart ? <Spin /> : i18n.language === 'EN' ? 'Add to cart' : 'أضف إلى السلة'
+        }
+              >
         <div className="modal-content">
           <div className="modal-field">
             <span>{i18n.language === 'EN' ? 'Color' : 'اللون'}</span>

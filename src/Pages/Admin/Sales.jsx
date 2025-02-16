@@ -19,7 +19,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { FaRegCopy } from 'react-icons/fa';
 
 const Sales = () => {
@@ -49,10 +49,10 @@ const Sales = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [addAdmin] = useAddAdminMutation();
-  const [updateAdmin] = useUpdateAdminMutation();
-  const [delAdmin] = useDelAdminMutation();
-  const [resetPassAdmin] = useForgetPasswordAdminMutation();
+  const [addAdmin , {isLoading:loadingSave}] = useAddAdminMutation();
+  const [updateAdmin , {isLoading:loading}] = useUpdateAdminMutation();
+  const [delAdmin , {isLoading:loadingDell}] = useDelAdminMutation();
+  const [resetPassAdmin , {isLoading:loadingReset}] = useForgetPasswordAdminMutation();
   const { data, isLoading, refetch } = useShowAdminTypeQuery({ type: "Sales", page: currentPage });
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -284,11 +284,11 @@ const Sales = () => {
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>Are you sure you want to delete this sales?</DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="secondary">
+          <Button onClick={() => setOpenDeleteDialog(false)}   variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
-          <Button onClick={confirmDelete} color="primary">
-            Confirm
+          <Button onClick={confirmDelete}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Confirm {loadingDell&&<Spin/>} 
           </Button>
         </DialogActions>
       </Dialog>
@@ -362,11 +362,11 @@ const Sales = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button onClick={handleCloseDialog}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
+          <Button onClick={handleSave}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
           </Button>
         </DialogActions>
       </Dialog>
@@ -392,16 +392,15 @@ const Sales = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenPasswordDialog(false)} color="secondary">
+          <Button onClick={() => setOpenPasswordDialog(false)}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
-          <Button onClick={handlePasswordSave} color="primary">
-            Save Password
+          <Button onClick={handlePasswordSave}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Save Password  {loadingReset&&<Spin/>} 
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar */}
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
         <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: "100%" }}>
           {snackbarMessage}

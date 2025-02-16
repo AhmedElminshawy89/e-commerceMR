@@ -430,7 +430,7 @@ const ProductSearch = () => {
       <Input
           placeholder="Search by Name"
           value={searchParams.name}
-          onChange={handleSearchChange("name")}
+          onChange={(e)=>handleSearchChange("name")(e.target.value)}
           style={{ width: 200, marginRight: "10px" }}
         />
 <Select
@@ -453,7 +453,8 @@ const ProductSearch = () => {
         <Input
           placeholder="Search by barcode"
           value={searchParams.barcode}
-          onChange={handleSearchChange("barcode")}
+          onChange={(e)=>handleSearchChange("barcode")(e.target.value)}
+
           style={{ width: 200 }}
         />
         <Button

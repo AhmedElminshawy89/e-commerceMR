@@ -19,7 +19,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 import { Link } from "react-router-dom";
 
 const AdminPanel = () => {
@@ -49,10 +49,10 @@ const AdminPanel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const [addAdmin] = useAddAdminMutation();
-  const [updateAdmin] = useUpdateAdminMutation();
-  const [delAdmin] = useDelAdminMutation();
-  const [resetPassAdmin] = useForgetPasswordAdminMutation();
+  const [addAdmin , {isLoading:loadingSave}] = useAddAdminMutation();
+  const [updateAdmin , {isLoading:loading}] = useUpdateAdminMutation();
+  const [delAdmin , {isLoading:loadingDel}] = useDelAdminMutation();
+  const [resetPassAdmin , {isLoading:loadingReset}] = useForgetPasswordAdminMutation();
   const { data, isLoading, refetch } = useShowAdminTypeQuery({ type: "Admin", page: currentPage });
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -249,23 +249,23 @@ const AdminPanel = () => {
 
   return (
     <Box sx={{ height: "100%", width: "100%" }}  className="cta">
-            <div style={{padding:10,marginBottom:20}}>
-      <Link
-      to={'/dashboard/admin/control/AdminSearch'}
-      className="banner-button"
-      >
-        Search Admin
-      </Link>      
-      </div>
       {!IsAvailable&&(
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleOpenDialog("add")}
-          sx={{ marginBottom: 2 }}
-        >
-          Add Admin
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleOpenDialog("add")}
+            sx={{ marginBottom: 2 }}
+          >
+            Add Admin
+          </Button>
+          <Link to='/dashboard/admin/control/AdminSearch'>
+  <Button variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+  Search Admin
+  </Button>
+</Link>
+        </>
+        
       )}
 
       <Table
@@ -286,11 +286,11 @@ const AdminPanel = () => {
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>Are you sure you want to delete this admin?</DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="secondary">
+          <Button onClick={() => setOpenDeleteDialog(false)}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
-          <Button onClick={confirmDelete} color="primary">
-            Confirm
+          <Button onClick={confirmDelete}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Confirm {loadingDel&&<Spin/>} 
           </Button>
         </DialogActions>
       </Dialog>
@@ -364,11 +364,11 @@ const AdminPanel = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button onClick={handleCloseDialog}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
+          <Button onClick={handleSave}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
           </Button>
         </DialogActions>
       </Dialog>
@@ -394,11 +394,11 @@ const AdminPanel = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenPasswordDialog(false)} color="secondary">
+          <Button onClick={() => setOpenPasswordDialog(false)}    variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
-          <Button onClick={handlePasswordSave} color="primary">
-            Save Password
+          <Button onClick={handlePasswordSave}    variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Save Password {loadingReset&&<Spin/>} 
           </Button>
         </DialogActions>
       </Dialog>

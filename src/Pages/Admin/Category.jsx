@@ -9,7 +9,7 @@ import {
   useDelCategoryMutation,
   useShowAllAdminCategoryQuery,
 } from "../../app/Api/Categories";
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { Link } from "react-router-dom";
 
 const StyledModal = styled(Modal)({
@@ -252,17 +252,20 @@ const Category = () => {
       >
         Export to CSV
       </Button>
-        </>
-      )}
-
-      <div style={{padding:10,marginBottom:20}}>
-      <Link
+      <Link to='/dashboard/admin/control/CategorySearch'>
+  <Button variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+  Search Category
+  </Button>
+</Link>
+      {/* <Link
       to={'/dashboard/admin/control/CategorySearch'}
       className="banner-button"
       >
         Search Category
-      </Link>      
-      </div>
+      </Link>   */}
+        </>
+      )}
+
       <Box sx={{ height: "auto", width: "100%" }} className="cta">
         <Table
           dataSource={categories}
@@ -348,7 +351,7 @@ const Category = () => {
             color="primary"
             loading={loading}
           >
-            {editingCategory ? "Update Category" : "Add Category"}
+            {editingCategory ? "Update Category" : "Add Category"} {loading&&(<Spin/>)}
           </Button>
           </Box>
           </DialogActions>
@@ -363,16 +366,16 @@ const Category = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDeleteCategory} color="primary">
+          <Button onClick={cancelDeleteCategory} 
+          variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>
             Cancel
           </Button>
           <Button
             onClick={confirmDeleteCategory}
-            color="secondary"
-            variant="contained"
+            variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}
             loading={loading} 
           >
-            Delete
+            Delete  {loading&&(<Spin/>)}
           </Button>
         </DialogActions>
       </Dialog>

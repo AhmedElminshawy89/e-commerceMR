@@ -41,9 +41,14 @@
     -o-border-radius: 10px !important;
 }
   
-  .about-us-right {
+ html[dir='ltr'] .about-us-right {
     flex: 1;
     text-align: left;
+    font-family: 'Arial', sans-serif;
+  }
+  html[dir='rtl'] .about-us-right {
+    flex: 1;
+    text-align: right;
     font-family: 'Arial', sans-serif;
   }
   

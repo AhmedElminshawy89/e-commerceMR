@@ -4,7 +4,7 @@ import { Box, Button, Modal, TextField, Typography, Dialog, DialogActions, Dialo
 import { styled } from "@mui/system";
 import { MdDelete } from "react-icons/md";
 
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { useDelAboutMutation, useSaveAboutMutation, useShowAllAdminAboutQuery, useUpdateAboutMutation } from "../../app/Api/AboutUs";
 
 const StyledModal = styled(Modal)({
@@ -300,7 +300,7 @@ const AboutUs = () => {
               Cancel
             </Button>
             <Button variant="contained" color="primary" loading={loadingSave} onClick={handleAddOrEditCategory}>
-              Save
+              Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
             </Button>
           </Box>
           </DialogActions>
@@ -313,9 +313,9 @@ const AboutUs = () => {
           <Typography>Are you sure you want to delete this AboutUs?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDeleteCategory}>Cancel</Button>
-          <Button onClick={confirmDeleteCategory} loading={loadingDel} color="error">
-            Delete
+          <Button onClick={cancelDeleteCategory}  variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>Cancel</Button>
+          <Button onClick={confirmDeleteCategory} loading={loadingDel}  variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Delete {loadingDel&&<Spin/>}
           </Button>
         </DialogActions>
       </Dialog>

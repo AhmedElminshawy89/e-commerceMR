@@ -17,6 +17,8 @@ const UserSearch = () => {
     { title: "Email", dataIndex: "email", key: "email", width: 150 },
     { title: "Phone", dataIndex: "phone", key: "phone", width: 100 },
     { title: "Gender", dataIndex: "gender", key: "gender", width: 100 },
+    { title: "Code", dataIndex: "code", key: "code", width: 100 },
+
   ];
 
   const rowClassName = (record, index) => {

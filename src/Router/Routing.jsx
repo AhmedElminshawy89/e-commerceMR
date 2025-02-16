@@ -48,6 +48,9 @@ import ContactSearch from '../Pages/Admin/ContactSearch';
 import AdminSearch from '../Pages/Admin/AdminSearch';
 import ProductOutOfStock from '../Pages/Admin/ProductOutOfStock';
 import RevSales from '../Pages/Admin/RevSales';
+import MemberToMember from '../components/MemberToMember';
+import ReferralPurchases from '../components/ReferralPurchases';
+import UserReferalPurshase from '../Pages/Admin/UserReferalPurshase';
 
 const Routing = () => {
   const location = useLocation();
@@ -88,6 +91,7 @@ const Routing = () => {
     }
   }, [location, refCode]);
 
+
   return (
     <Routes>  
         <Route path="/login" element={token?<Navigate to={'/'}/>:<Login />} />
@@ -96,6 +100,7 @@ const Routing = () => {
         <Route path="/verify-email/:email" element={token?<Navigate to={'/'}/>:<OTPForm />} />
         <Route path="/forgot-password" element={token?<Navigate to={'/'}/>:<ForgetPassword />} />
         <Route path="/reset-password/:email" element={token?<Navigate to={'/'}/>:<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
       <Route path='/' element={<AppLayout />}>
         <Route index element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -103,118 +108,124 @@ const Routing = () => {
         <Route path="/product" element={<ProductsPage />} />
         <Route path="/product/:name" element={<ProductsDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="*" element={<NotFound />} />
       <Route path='/my-account' element={!token?<Navigate to={'/'}/>:<ProfileLayout/>}>
         <Route index element={!token?<Navigate to={'/'}/>:<AccountDetails/>}/>
         <Route path='change-password' element={!token?<Navigate to={'/'}/>:<ChangePassword/>}/>
         <Route path='my-orders' element={!token?<Navigate to={'/'}/>:<Orders/>}/>
+        <Route path='member-by-member' element={!token?<Navigate to={'/'}/>:<MemberToMember/>}/>
+        <Route path='referral-purchases' element={!token?<Navigate to={'/'}/>:<ReferralPurchases/>}/>
       </Route>
       </Route>
 
 <Route 
   path='/dashboard/admin/control' 
-  element={(!tokenAdmin || !IsAvailable) ? <Navigate to='/login-admin' /> : <DashboardLayout />}
+  element={(!tokenAdmin || !(res === "Moderator" || res === "Admin" || res === "Sales")) ? <Navigate to='/login-admin' /> : <DashboardLayout />}
 >
-  <Route index element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <DashboardIndex />} />
+  <Route index element={(!tokenAdmin || !(res === "Moderator" || res === "Admin" || res === "Sales")) ? <Navigate to='/login-admin' /> : <DashboardIndex />} />
   
   <Route 
     path='category' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <Category />} 
+    element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <Category />} 
+  />
+    
+    <Route 
+    path='referred-customer' 
+    element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <UserReferalPurshase />} 
   />
   
   <Route 
     path='CategorySearch' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <CategorySearch />} 
+    element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <CategorySearch />} 
   />
   
   <Route 
     path='ProductOutOfStock' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ProductOutOfStock />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <ProductOutOfStock />} 
   />
   
   <Route 
     path='products' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ProductsAdmin />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <ProductsAdmin />} 
   />
   
   <Route 
     path='ProductSearch' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ProductSearch />} 
+    element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <ProductSearch />} 
   />
   
   <Route 
     path='banner' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <Banner />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <Banner />} 
   />
   
   <Route 
     path='image-banner' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ImageBanners />} 
+    element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <ImageBanners />} 
   />
   
   <Route 
     path='advertising' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <Advertising />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <Advertising />} 
   />
   
   <Route 
     path='services' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <Services />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <Services />} 
   />
   
   <Route 
     path='about-us' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <AboutUs />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <AboutUs />} 
   />
   
   <Route 
     path='social-link' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <SocialMedia />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <SocialMedia />} 
   />
   
   <Route 
     path='why-us' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <WhyUs />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <WhyUs />} 
   />
   
   <Route 
     path='discount' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <CashBack />} 
+    element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <CashBack />} 
   />
   
   <Route 
     path='feature' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <FeatureAdmin />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <FeatureAdmin />} 
   />
   
   <Route 
     path='review' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <Reviews />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <Reviews />} 
   />
   
   <Route 
     path='contact-us-section' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ContactusSec />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <ContactusSec />} 
   />
   
   <Route 
     path='over-all-info' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <OverAllInfo />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <OverAllInfo />} 
   />
   
   <Route 
     path='contact' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ContactShow />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <ContactShow />} 
   />
   
   <Route 
     path='ContactSearch' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <ContactSearch />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <ContactSearch />} 
   />
   
   <Route 
     path='subscribe' 
-    element={(!tokenAdmin || res !== "Admin") ? <Navigate to='/login-admin' /> : <SubscribeShow />} 
+    element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <SubscribeShow />} 
   />
   
   <Route 
@@ -253,9 +264,10 @@ const Routing = () => {
   />
   
   <Route 
-    path='Rev-sales' 
-    element={(!tokenAdmin || res !== "Sales") ? <Navigate to='/login-admin' /> : <RevSales />} 
-  />
+  path="Rev-sales" 
+  element={tokenAdmin && res == "Sales" ? <RevSales /> : <Navigate to="/login-admin" />} 
+/>
+
 </Route>
 
       

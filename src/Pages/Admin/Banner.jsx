@@ -4,7 +4,7 @@ import { Box, Button, Modal, TextField, Typography, Dialog, DialogActions, Dialo
 import { styled } from "@mui/system";
 import { MdDelete } from "react-icons/md";
 
-import { message, Table } from "antd";
+import { message, Spin, Table } from "antd";
 import { useDelBannerMutation, useSaveBannerMutation, useShowAllAdminBannerQuery, useUpdateBannerMutation, useUpdateStatusBannerMutation } from "../../app/Api/Banner";
 
 const StyledModal = styled(Modal)({
@@ -370,7 +370,7 @@ const Banner = () => {
               Cancel
             </Button>
             <Button variant="contained" color="primary" loading={loadingSave} onClick={handleAddOrEditCategory}>
-              Save
+              Save {loadingSave&&<Spin/>} {loading&&<Spin/>}
             </Button>
           </Box>
           </DialogActions>
@@ -383,9 +383,9 @@ const Banner = () => {
           <Typography>Are you sure you want to delete this Banner?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDeleteCategory}>Cancel</Button>
-          <Button onClick={confirmDeleteCategory} loading={loadingDel} color="error">
-            Delete
+          <Button onClick={cancelDeleteCategory}   variant="outlined" color="error" sx={{ marginBottom: 2, marginLeft: 2 }}>Cancel</Button>
+          <Button onClick={confirmDeleteCategory} loading={loadingDel}   variant="outlined" color="secondary" sx={{ marginBottom: 2, marginLeft: 2 }}>
+            Delete {loadingDel&&<Spin/>}
           </Button>
         </DialogActions>
       </Dialog>

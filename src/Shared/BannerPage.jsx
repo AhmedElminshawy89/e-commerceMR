@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useTranslation } from 'react-i18next';
 import '../Style/BannerPage.css';
+import { Link } from 'react-router-dom';
 
 const BannerPage = ({ image, pageTitle }) => {
   const {i18n} = useTranslation()
@@ -10,7 +11,7 @@ const BannerPage = ({ image, pageTitle }) => {
       <div className="banner-content">
         <h1>{pageTitle}</h1>
         <p>
-          <a href="/" className="breadcrumb">{i18n.language==="EN"?"Home":"الصفحه الرئيسيه"}</a> / {pageTitle}
+          <Link to="/" className="breadcrumb">{i18n.language==="EN"?"Home":"الصفحه الرئيسيه"}</Link> / {pageTitle}
         </p>
       </div>
     </div>

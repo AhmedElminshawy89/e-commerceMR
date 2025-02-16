@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox, Pagination } from "antd";
 import ProductCard from '../Shared/ProductCard';
 import '../Style/WholeProducts.css';
@@ -10,6 +10,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
 import { useShowCategoryQuery } from "../app/Api/Categories";
+import { useLocation } from "react-router-dom";
 
 const WholeProducts = () => {
   const { i18n } = useTranslation();
@@ -17,13 +18,20 @@ const WholeProducts = () => {
   const { data: allColors } = useShowProductColorsQuery();
   
   const categoryName = localStorage.getItem('categoryName') || '';
+  const location = useLocation();
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("categoryName");
+    };
+  }, [location.pathname]);
   
   const [filter, setFilter] = useState({
-    category: categoryName,
+    category: categoryName ? [categoryName] : [],
     color: [],
     size: [],
     search: "",
-    price: "", 
+    price_order: "", 
   });
 
   const [openCategory, setOpenCategory] = useState(false);
@@ -39,7 +47,7 @@ const WholeProducts = () => {
     color: filter.color.join(","),
     size: filter.size.join(","),
     search: filter.search,
-    price: filter.price,
+    price_order: filter.price_order,
   };
 
   const { data, isLoading, error } = useShowProductsQuery(query);
@@ -50,10 +58,14 @@ const WholeProducts = () => {
 
   const handleFilterChange = (filterType, value) => {
     setFilter((prev) => {
+      if (filterType === "search" || filterType === "price_order") {
+        return { ...prev, [filterType]: value }; 
+      }
+  
       if (prev[filterType]?.includes(value)) {
         return {
           ...prev,
-          [filterType]: prev[filterType].filter((item) => item !== value),
+          [filterType]: prev[filterType]?.filter((item) => item !== value),
         };
       } else {
         return {
@@ -64,12 +76,14 @@ const WholeProducts = () => {
     });
   };
   
+  
+  
 
 
 
   const handleClearSelectedFilter = (filterType, valueToRemove) => {
     setFilter((prev) => {
-      const updatedFilter = prev[filterType].filter((item) => item !== valueToRemove); // إزالة العنصر المحدد فقط
+      const updatedFilter = prev[filterType].filter((item) => item !== valueToRemove); 
       return {
         ...prev,
         [filterType]: updatedFilter, 
@@ -88,7 +102,7 @@ const WholeProducts = () => {
       color: [],
       size: [],
       search: "",
-      price: "", 
+      price_order: "", 
     });
     localStorage.removeItem('categoryName');
   };
@@ -166,12 +180,12 @@ const WholeProducts = () => {
               <p onClick={() => setOpenPrice(!openPrice)} className="filter-title">{i18n.language === 'EN' ? "Price" : "السعر"}</p>
               <div className={`filter-checkbox-container ${openPrice ? "open" : ""}`}>
                 <div className="filter-checkbox">
-                  <Checkbox onChange={() => handleFilterChange("price", "low-to-high")} 
+                  <Checkbox onChange={() => handleFilterChange("price_order", "asc")} 
                     />
                   <label>{i18n.language === 'EN' ? "Low to High" : "منخفض إلى مرتفع"}</label>
                 </div>
                 <div className="filter-checkbox">
-                  <Checkbox onChange={() => handleFilterChange("price", "high-to-low")} />
+                  <Checkbox onChange={() => handleFilterChange("price_order", "desc")} />
                   <label>{i18n.language === 'EN' ? "High to Low" : "من الأعلى إلى الأدنى"}</label>
                 </div>
               </div>
@@ -183,14 +197,13 @@ const WholeProducts = () => {
                 {categories?.categories?.map((category, index) => (
                   <div className="filter-checkbox" key={index}>
 <Checkbox
-  onChange={(e) => handleFilterChange(
+  onChange={() => handleFilterChange(
     "category", 
-    e.target.checked 
-      ? (i18n.language === 'EN' ? category.name_en : category.name_ar) 
-      : ""
+    i18n.language === 'EN' ? category.name_en : category.name_ar
   )}
-  checked={filter.category?.includes(i18n.language === 'EN' ? category.name_en : category.name_ar)}
+  checked={filter.category.includes(i18n.language === 'EN' ? category.name_en : category.name_ar)}
 />
+
 
                     <label>{i18n.language === 'EN' ? category.name_en : category.name_ar}</label>
                   </div>
@@ -306,6 +319,9 @@ const WholeProducts = () => {
               <FaListUl className={`${show === 'grid' ? "" : "active"}`} onClick={() => handleShowBox('flex')} />
             </div>
           </div>
+          {data?.products?.data?.length === 0 && <p style={{textAlign:'center',margin:'10px 0',fontSize:'20px'}}>
+            {i18n.language === "EN" ? "No products found": "لا توجد منتجات"}
+            </p>}
           <div className={`${show === "grid" ? "products-container" : "products-container-flex"}`}>
             {isLoading ? (
               [...Array(8)].map((_, index) => (
@@ -317,7 +333,7 @@ const WholeProducts = () => {
                 </div>
               ))
             ) : (
-              data?.products?.data?.slice(0, 8)?.map((product, index) => (
+              data?.products?.data?.map((product, index) => (
                 <ProductCard key={product.id || index} product={product} />
               ))
             )}

@@ -348,6 +348,9 @@
 
 :where(.css-dev-only-do-not-override-7ny38l).ant-btn-variant-solid:not(:disabled):not(.ant-btn-disabled){
   background-color: var(--mint-green) !important;
+  color: #fff !important;
+  font-weight:  normal !important;
+
 }
 
 .modal-field .ant-select-selector:nth-child(2) {

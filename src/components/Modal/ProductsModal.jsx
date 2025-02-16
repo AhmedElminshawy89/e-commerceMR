@@ -135,15 +135,18 @@ const ProductsModal = ({ isModalVisible, handleCloseModal, showProduct }) => {
             <Typography variant="h6" sx={{ fontWeight: "bold", color: "#333" }}>
               Additional Images
             </Typography>
-            {Array.isArray(showProduct?.OtherImage) ? (
-  showProduct.OtherImage.map((image, index) => (
-    <AdditionalImage key={index}>
-      <img src={image} alt={`Other Image ${index}`} />
-    </AdditionalImage>
-  ))
-) : (
-  <p></p>
-)}
+            <div style={{display:'flex',gap:'10px',flexWrap:'wrap',width:'100%'}}>
+
+                  {Array.isArray(showProduct?.OtherImage) ? (
+        showProduct.OtherImage.map((image, index) => (
+          <AdditionalImage key={index}>
+            <img src={image} alt={`Other Image ${index}`} />
+          </AdditionalImage>
+        ))
+      ) : (
+        <p></p>
+      )}
+            </div>
 
           </AdditionalImages>
         )}

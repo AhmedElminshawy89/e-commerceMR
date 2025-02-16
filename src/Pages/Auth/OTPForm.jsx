@@ -11,7 +11,7 @@ const OTPForm = () => {
   const [resendOtp] = useResendOtpMutation();
   const [timer, setTimer] = useState(() => {
     const savedTime = localStorage.getItem('otpTimer');
-    return savedTime ? parseInt(savedTime) : 180;
+    return savedTime ? parseInt(savedTime) : 300;
   }); 
     const { t } = useTranslation(); 
   const { email } = useParams();
@@ -26,7 +26,7 @@ const OTPForm = () => {
 
     const countdown = setInterval(() => {
       setTimer(prevTimer => prevTimer - 1);
-    }, 180); 
+    }, 1000); 
 
     return () => clearInterval(countdown);
   }, [timer]);
@@ -50,6 +50,7 @@ const OTPForm = () => {
           message: t('verificationSuccessful'),
           description: t('otpVerified', { otp: otpValue }),
         });
+        localStorage.removeItem('otpTimer')
         navigate('/login');
       } catch (error) {
         if (error.status === 400 && error.data?.error) {

@@ -38,24 +38,30 @@ export const siteDetailsApi = createApi({
         method: 'GET',
       }),
     }),
+    showAllAdminOverAllInfo2: builder.query({
+      query: () => ({
+        url: `/admin/info/showAll`,
+        method: 'GET',
+      }),
+    }),
 
     saveImageBanners: builder.mutation({
         query: (newInfo) => ({
-          url: '/admin/banner/save',
+          url: '/admin/ImagesBanner/save',
           method: 'POST',
           body: newInfo,
         }),
       }),
       updateImageBanners: builder.mutation({
         query: ({ id, updateCategory }) => ({
-          url: `/admin/banner/update/${id}`,
+          url: `/admin/ImagesBanner/update/${id}`,
           method: 'POST',
           body: updateCategory,
         }),
       }),
     showAllAdminImageBanners: builder.query({
       query: () => ({
-        url: `/admin/banner/show`,
+        url: `/admin/ImagesBanner/show`,
         method: 'GET',
       }),
     }),
@@ -93,6 +99,7 @@ export const {
   useSaveOverAllInfoMutation,
   useUpdateOverAllInfoMutation,
   useShowAllAdminOverAllInfoQuery,
+  useShowAllAdminOverAllInfo2Query,
 
   useSaveImageBannersMutation,
   useUpdateImageBannersMutation,

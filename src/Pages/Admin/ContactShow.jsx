@@ -20,7 +20,7 @@ const ContactShow = () => {
   
   return (
     <Box sx={{ height: 500, width: "100%" }}  className="cta">
-            <div style={{padding:10,marginBottom:20}}>
+            <div style={{padding:0,marginBottom:20}}>
       <Link
       to={'/dashboard/admin/control/ContactSearch'}
       className="banner-button"

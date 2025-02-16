@@ -72,20 +72,23 @@ const SignUp = () => {
 
   const nextStep = () => {
     const fieldsToValidate = ['name', 'gender', 'phone'];
-    const isValid = fieldsToValidate?.every(
-      (field) => !formik?.errors[field] && formik?.values[field]
+  
+    const hasErrors = fieldsToValidate.some(
+      (field) => formik.errors[field] || !formik.values[field]
     );
   
-    if (isValid) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      notification.error({
-        message: t('validationError'),
-        description: t('fillAllFieldsCorrectly'),
-      });
-      fieldsToValidate?.forEach((field) => formik?.setFieldTouched(field, true));
+    if (hasErrors) {
+      fieldsToValidate.forEach((field) => formik.setFieldTouched(field, true));
+      // notification.error({
+      //   message: t('validationError'),
+      //   description: t('fillAllFieldsCorrectly'),
+      // });
+      return;
     }
+  
+    setCurrentStep((prev) => prev + 1);
   };
+  
   
 
   const prevStep = () => {

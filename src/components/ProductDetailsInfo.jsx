@@ -11,6 +11,8 @@ import { useSaveReviewMutation } from "../app/Api/Review";
 import { useForm } from "antd/es/form/Form";
 import { useAddToCartMutation, useShowCartQuery } from "../app/Api/Cart";
 import { Spin } from 'antd'; 
+import { useDispatch } from "react-redux";
+import { setCartLength } from "../app/cartSlice";
 
 const ProductDetailsInfo = () => {
   const { name } = useParams();
@@ -42,7 +44,8 @@ const ProductDetailsInfo = () => {
       setQuantity(quantity + 1);
     }
   };
-  
+  const dispatch = useDispatch();
+// const cartLength = useSelector((state) => state.cart.cartLength);
 
   const handleImageClick = () => {
     setModalOpen(true);
@@ -62,6 +65,14 @@ const ProductDetailsInfo = () => {
       message.error(i18n.language === "EN" ? "Please choose the color and size before adding to cart!" : "يرجى اختيار اللون والمقاس قبل الإضافة إلى السلة!");
       return;
     }
+    if (Number(data?.data?.product?.stock || 0) < (quantity || 0)) {
+      message.error(
+        i18n.language === "EN"
+          ? "Not enough stock for this product!"
+          : "لا يوجد مخزون كافٍ لهذا المنتج!"
+      );
+      return;
+    }
   
     if (!token) {
       const cartData = {
@@ -72,10 +83,24 @@ const ProductDetailsInfo = () => {
         size: selectedSize,
         quantity,
       };
-  
+      
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.push(cartData);
+      
+      const existingIndex = cart.findIndex(
+        (item) =>
+          item.product_id === cartData.product_id &&
+          item.color === cartData.color &&
+          item.size === cartData.size
+      );
+      
+      if (existingIndex !== -1) {
+        cart[existingIndex].quantity += cartData.quantity;
+      } else {
+        cart.push(cartData);
+      }
+      
       localStorage.setItem("cart", JSON.stringify(cart));
+      dispatch(setCartLength(cart.length));
       
       message.success(i18n.language === "EN" ? "Item added to cart successfully!" : "تمت إضافة العنصر إلى السلة بنجاح!");
     } else {
@@ -221,7 +246,7 @@ const ProductDetailsInfo = () => {
                     </div>
                     <div className="btns">
                     <button 
-                      className="banner-button" 
+                      className="banner-button2" 
                       onClick={handleAddToCart} 
                       disabled={loadingCart} 
                     >

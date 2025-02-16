@@ -8,7 +8,7 @@ export const AdvertisingApi = createApi({
     baseUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
-      const language = localStorage.getItem('userLanguage') || "EN";
+      const language = (localStorage.getItem('userLanguage') || "en").toLowerCase();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
