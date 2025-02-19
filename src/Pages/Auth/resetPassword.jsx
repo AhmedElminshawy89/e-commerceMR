@@ -115,7 +115,7 @@ const ResetPassword = () => {
         <h2 className="heading">{t('verifyOtp')}</h2>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item label={t('otp')} required>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px' ,direction:'ltr'}}>
               {otp.map((digit, index) => (
                 <Input
                   key={index}

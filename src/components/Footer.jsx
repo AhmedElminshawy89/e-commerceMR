@@ -18,17 +18,16 @@ const Footer = () => {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email) {
-      message.warning("Please enter a valid email address.");
+      message.warning(i18n.language === "EN" ?"Please enter a valid email address.":"يرجى إدخال عنوان بريد إلكتروني صالح.");
       return;
     }
 
     try {
       await saveSubscribe({ email }).unwrap();
-      message.success("Subscription successful! Thank you for subscribing.");
+      message.success(i18n.language==="EN"?"Subscription successful! Thank you for subscribing.":" تم الاشتراك بنجاح ! شكرا لك على الاشتراك.");
       setEmail("");
     } catch (error) {
-      message.error("Failed to subscribe. Please try again.");
-      console.error("Subscription error:", error);
+      message.error(i18n.language==="EN"?"An error occurred while subscribing. Please try again later.":"حدث خطأ أثناء الاشتراك. يرجى المحاولة مرة أخرى لاحقًا.");
     }
   };
 

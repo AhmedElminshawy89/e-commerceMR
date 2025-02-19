@@ -32,8 +32,8 @@ const Orders = () => {
     },
     {
       title: i18n.language === "EN" ? "Total" : "الاجمالي",
-      dataIndex: "before_discount",
-      key: "before_discount",
+      dataIndex: "amount_cents",
+      key: "amount_cents",
       render: (value) => {
         return value;
       },
@@ -73,7 +73,7 @@ const Orders = () => {
   };
 
   const generatePDF = (order, currency = "EGP") => {
-    const { items, shipping_data, payment_method, before_discount, status, order_id, updated_at, discount } = order;
+    const { items, shipping_data, payment_method, before_discount, status, order_id, updated_at, amount_cents } = order;
     
     const isArabic = i18n.language !== "EN";
     const textAlign = isArabic ? "right" : "left";
@@ -188,7 +188,7 @@ const Orders = () => {
             </table>
   
             <h3 class="total">${isArabic ? "الإجمالي (قبل الخصم):" : "Total (Before Discount):"} ${formatCurrency(before_discount)}</h3>
-            <h3 class="total">${isArabic ? "الإجمالي (بعد الخصم):" : "Total (After Discount):"} ${formatCurrency(before_discount - discount)}</h3>
+            <h3 class="total">${isArabic ? "الإجمالي (بعد الخصم):" : "Total (After Discount):"} ${formatCurrency(amount_cents)}</h3>
   
             <button class="btn-print" onclick="window.print();">${isArabic ? "طباعة الفاتورة" : "Print Invoice"}</button>
           </div>

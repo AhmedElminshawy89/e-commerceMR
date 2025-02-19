@@ -7,7 +7,7 @@ export const contactApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     prepareHeaders: (headers) => {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = document.cookie.split('; ')?.find(row => row.startsWith('token='))?.split('=')[1];
       const language = (localStorage.getItem('userLanguage') || "en").toLowerCase();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);

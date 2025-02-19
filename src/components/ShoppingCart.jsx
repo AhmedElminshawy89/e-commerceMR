@@ -25,7 +25,7 @@ const ShoppingCart = () => {
   // const storedRef = localStorage.getItem('ref');
   const code = SingleUser?.user?.code || null
   const {data:discount} = useShowDiscountToUserQuery({code:code,userId:SingleUser?.user?.id})
-  const { t  } = useTranslation();
+  const { t  , i18n} = useTranslation();
   useEffect(() => {
     if (!token) {
       const cartData = JSON.parse(localStorage.getItem("cart")) || [];
@@ -41,6 +41,12 @@ const ShoppingCart = () => {
 
   const handleUpdateCart = async (id, updates) => {
     const item = cartItems.find((item) => item.id === id);
+    if (updates.quantity && updates.quantity > item.stock) {
+      return notification.error({
+        message: t("Error"),
+        description: i18n.language==="EN"?"The requested quantity exceeds available stock.":"الكمية المطلوبة تتجاوز المخزون المتاح.",
+      });
+    }
     const cartData = {
       ...updates,
       size: updates.size || item.size,

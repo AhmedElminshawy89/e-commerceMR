@@ -50,6 +50,51 @@ export const paymentsApi = createApi({
         method: 'GET',
       }),
     }),
+
+    // Commission
+    showCalcCommission: builder.query({
+      query: (salesId) => ({
+        url: `/admin/commissions/calculate/${salesId}`,
+        method: 'GET',
+      }),
+    }),
+    saveWithDrawCommission: builder.mutation({
+      query: (SalesId) => ({
+        url: `/admin/commissions/withdraw/${SalesId}`,
+        method: 'POST',
+      }),
+    }),
+    showPendingOrders: builder.query({
+      query: (salesId) => ({
+        url: `/admin/commissions/sales/${salesId}`,
+        method: 'GET',
+      }),
+    }),
+    showAllCommission: builder.query({
+      query: ({salesId,from,to}) => ({
+        url: `/admin/commissions/pending/${salesId}/${from}/${to}`,
+        method: 'GET',
+      }),
+    }),
+    showAllCommissionAdmin: builder.query({
+      query: (page) => ({
+        url: `/admin/commissions/show?page=${page}`,
+        method: 'GET',
+      }),
+    }),
+    updateCommissionReq: builder.mutation({
+      query: (id) => ({
+        url: `/admin/commissions/update/${id}`,
+        method: 'POST',
+      }),
+    }),
+    SearchCommissionReq: builder.mutation({
+      query: (data) => ({
+        url: `/admin/commissions/search`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -59,4 +104,13 @@ export const {
   useShowAllAdminPaymentQuery,
   useShowPaymentQuery,
   useLazyShowAllAdminPaymentSearchQuery,
+
+  // Commission
+  useShowCalcCommissionQuery,
+  useSaveWithDrawCommissionMutation,
+  useShowPendingOrdersQuery,
+  useLazyShowAllCommissionQuery,
+  useShowAllCommissionAdminQuery,
+  useUpdateCommissionReqMutation,
+  useSearchCommissionReqMutation
 } = paymentsApi;

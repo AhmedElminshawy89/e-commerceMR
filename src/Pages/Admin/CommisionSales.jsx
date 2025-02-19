@@ -1,59 +1,28 @@
 import { Table, Button, Space, Tag } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import { useShowPaymentQuery } from "../../app/Api/Payments";
+import { useShowPendingOrdersQuery } from "../../app/Api/Payments";
 import logo from '../../assets/Img/logo.jpg';
 
-const RevSales = () => {
+const CommisionSales = () => {
   const { i18n } = useTranslation();
   const code = document.cookie.split('; ').find(row => row.startsWith('code='))?.split('=')[1];
-  const { data: orders , isLoading} = useShowPaymentQuery(code);
-
+  const SalesId = document.cookie.split('; ').find(row => row.startsWith('SalesId='))?.split('=')[1];
+  const { data: PendingOrders , isLoading} = useShowPendingOrdersQuery(SalesId);
+  console.log(PendingOrders?.commissions)
   const columns = [
-
     {
-      title: i18n.language === "EN" ? "Order ID" : "معرف الطلب",
-      dataIndex: "order_id",
-      key: "order_id",
+      title: i18n.language === "EN" ? "name(الاسم)" : "تاريخ",
+      dataIndex: "sales",
+      key: "sales",
+        render: (text) => {
+            return text?.name;
+        },
     },
     {
-      title: i18n.language === "EN" ? "Name" : "الاسم",
-      dataIndex: "shipping_data",
-      key: "shipping_data",
-      render: (text) => {
-        return text.first_name + " " + text.last_name;
-      },
-    },
-    {
-      title: i18n.language === "EN" ? "Payment Method" : "طريقة الدفع",
-      dataIndex: "payment_method",
-      key: "payment_method",
-    },
-    {
-      title: i18n.language === "EN" ? "Total" : "الاجمالي",
-      dataIndex: "amount_cents",
-      key: "amount_cents",
-      render: (value) => {
-        return value;
-      },
-    },
-    {
-      title: i18n.language === "EN" ? "Status" : "الحاله",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
-        let color = "blue";
-        if (status === "paid") color = "green";
-        if (status === "pending") color = "orange";
-        if (status === "failed") color = "red";
-
-        return <Tag color={color}>{status}</Tag>;
-      },
-    },
-    {
-      title: i18n.language === "EN" ? "Date" : "التاريخ",
-      dataIndex: "updated_at",
-      key: "updated_at",
+      title: i18n.language === "EN" ? "Request Date(تاريخ الطلب)" : "تاريخ",
+      dataIndex: "withdraw_date",
+      key: "withdraw_date",
       render: (text) => {
         const date = new Date(text);
         const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
@@ -61,31 +30,23 @@ const RevSales = () => {
       },
     },
     {
-      title: i18n.language === "EN" ? "commission paid" : "حاله العموله",
-      dataIndex: "commission_paid",
-      key: "commission_paid",
-      render: (status) => {
-        let color = "blue";
-        if (status === "true") color = "green";
-        if (status === "false") color = "red";
-
-        return <Tag color={color}>{status==="true"?"paid":"pending"}</Tag>;
+        title: i18n.language === "EN" ? "Commission(العموله)" : "تاريخ",
+        dataIndex: "amount",
+        key: "amount",
       },
-    },
-    {
-      title: i18n.language === "EN" ? "Actions" : "الاجراء",
-      key: "actions",
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            className="banner-button"
-            onClick={() => handleViewOrder(record)}
-          ></Button>
-        </Space>
-      ),
-    },
+      {
+        title: i18n.language === "EN" ? "Status(الحاله)" : "الحاله",
+        dataIndex: "status",
+        key: "status",
+        render: (status) => {
+          let color = "blue";
+          if (status === "paid") color = "green";
+          if (status === "pending") color = "orange";
+          if (status === "failed") color = "red";
+  
+          return <Tag color={color}>{status}</Tag>;
+        },
+      },
   ];
 
   const handleViewOrder = (order) => {
@@ -208,7 +169,8 @@ const RevSales = () => {
               `).join('')}
             </table>
   
-            <h3 class="total">${isArabic ? "الإجمالي (بعد الخصم):" : "Total :"} ${formatCurrency(before_discount - discount)}</h3>
+            <h3 class="total">${isArabic ? "الإجمالي (قبل الخصم):" : "Total (Before Discount):"} ${formatCurrency(before_discount)}</h3>
+            <h3 class="total">${isArabic ? "الإجمالي (بعد الخصم):" : "Total (After Discount):"} ${formatCurrency(before_discount - discount)}</h3>
   
             <button class="btn-print" onclick="window.print();">${isArabic ? "طباعة الفاتورة" : "Print Invoice"}</button>
           </div>
@@ -225,14 +187,14 @@ const RevSales = () => {
 
   return (
     <div style={{ padding: "20px" }} className="cta">
-      <Table
-        dataSource={orders?.orders?.data}
+        <Table
+        dataSource={PendingOrders?.commissions}
         columns={columns}
         isLoading={isLoading}
         pagination={{ pageSize: 5 }}
-      />
+        />
     </div>
   );
 };
 
-export default RevSales;
+export default CommisionSales;

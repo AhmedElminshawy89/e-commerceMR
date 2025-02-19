@@ -320,8 +320,7 @@ const ProductSearch = () => {
   const handleExportToCSV = () => {
     const header = [
       "id", "name_ar", "name_en", "desc_ar", "desc_en", 
-      "mainPrice", "priceDiscount", "colors", "sizes", 
-      "stock", "barcode"
+      "mainPrice", "priceDiscount", "colors", "sizes",  "barcode"
     ];
   
     const rows = categories.map((product) => [
@@ -334,7 +333,7 @@ const ProductSearch = () => {
       product.price_discount,
       (product.colors && Array.isArray(product.colors) ? product.colors.join("; ") : ""),
       (product.sizes && Array.isArray(product.sizes) ? product.sizes.join("; ") : ""),  
-      product.stock,
+      // product.stock,
       product.barcode,
       // product.mainImage,
       // product.otherImage,
@@ -637,6 +636,8 @@ const ProductSearch = () => {
     <MenuItem value="8">8</MenuItem>
     <MenuItem value="10">10</MenuItem>
     <MenuItem value="12">12</MenuItem>
+    <MenuItem value="14">14</MenuItem>
+    <MenuItem value="16">16</MenuItem>
   </Select>
   <FormHelperText>{errors.sizes}</FormHelperText>
 </FormControl>

@@ -36,6 +36,7 @@ const LoginAdmin = () => {
         document.cookie = `tokenAdmin=${res?.data?.token};expires=${expires.toUTCString()};path=/`;
         document.cookie = `res=${res?.data?.admin?.type};expires=${expires.toUTCString()};path=/`;
         document.cookie = `code=${res?.data?.admin?.code};expires=${expires.toUTCString()};path=/`;
+        document.cookie = `SalesId=${res?.data?.admin?.id};expires=${expires.toUTCString()};path=/`;
         navigate('/dashboard/admin/control')
       } catch (error) {
         notification.error({

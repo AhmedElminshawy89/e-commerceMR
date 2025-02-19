@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router } from 'react-router-dom'; 
 import Routing from "./Router/Routing";
-import ScrollToTop from './components/ScrollToTop';
+import OfflineNotice from "./Shared/func/OfflineNotice";
 
 const App = () => {
   useEffect(() => {
@@ -39,7 +39,7 @@ const App = () => {
   }, []);
   return (
     <Router> 
-      <ScrollToTop/>
+      <OfflineNotice/>
       <Routing />
     </Router>
   );

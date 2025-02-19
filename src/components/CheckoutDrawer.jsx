@@ -113,6 +113,7 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
               message: t("Please select a payment method."),
             },
           ]}
+          initialValue="cash_on_delivery" 
         >
           <Radio.Group
             buttonStyle="solid"
@@ -130,7 +131,7 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
             >
               {t("Cash on Delivery")}
             </Radio.Button>
-            <Radio.Button
+            {/* <Radio.Button
               value="paymob"
               style={{
                 border: "2px solid #d9d9d9",
@@ -141,7 +142,7 @@ const CheckoutDrawer = ({ visible, onClose ,amount_cents,
               }}
             >
               {t("Paymob")}
-            </Radio.Button>
+            </Radio.Button> */}
           </Radio.Group>
         </Form.Item>
 

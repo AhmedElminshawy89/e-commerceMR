@@ -17,6 +17,9 @@ import {
   FaImages,
   FaInfo
 } from "react-icons/fa";
+import { CiMoneyBill  ,CiCalculator1 , CiLink } from "react-icons/ci";
+import { TbReorder } from "react-icons/tb";
+
 import { AiFillInteraction } from "react-icons/ai";
 import { TbDiscount } from "react-icons/tb";
 import { CiInboxOut } from "react-icons/ci";
@@ -26,6 +29,7 @@ import { MdDesignServices ,MdConnectWithoutContact, MdOutlineFeaturedPlayList,Md
 
 import {CiMaximize1 , CiLogin } from "react-icons/ci";
 import { useState } from "react";
+import { MdOutlinePendingActions } from "react-icons/md";
 
 import logo from '../assets/Img/logo.jpg'
 
@@ -60,10 +64,54 @@ const DashboardLayout = () => {
     { path: "/dashboard/admin/control/contact-us-section", label: "Contact Us Section", icon: <MdOutlineContactMail className="icon" /> },
     { path: "/dashboard/admin/control/discount", label: "Discount", icon: <TbDiscount className="icon" /> },
     { path: "/dashboard/admin/control/sales", label: "Sales", icon: <FaChartLine className="icon" /> },
-    { path: "/dashboard/admin/control/Rev-sales", label: "Rev Sales", icon: <CiMaximize1 className="icon" /> },
+    { path: "/dashboard/admin/control/your-link", label: (
+      <>
+      Your Link
+      <br />
+   اللينك الخاص بك
+    </>
+    ), icon: <CiLink className="icon" /> },
+    { 
+      path: "/dashboard/admin/control/Rev-sales", 
+      label: (
+        <>
+          Rev Sales
+          <br />
+       كل مبيعات البائع
+        </>
+      ), 
+      icon: <CiMaximize1 className="icon" /> 
+    },
+
+          { path: "/dashboard/admin/control/calculate-commission",
+            label: (
+              <>
+                Calculate Commission
+                <br />
+                احسب العمولة
+              </>
+            ), icon: <CiCalculator1 className="icon" /> },
+            { path: "/dashboard/admin/control/pending-orders",
+              label: (
+                <>
+                 Pending orders
+                  <br />
+                  الطلبات المعلقه
+                </>
+              ), icon: <MdOutlinePendingActions className="icon" /> },
+              { path: "/dashboard/admin/control/all-commission",
+                label: (
+                  <>
+                   All Commission
+                    <br />
+                    كل العموله 
+                  </>
+                ), icon: <TbReorder className="icon" /> },
     { path: "/dashboard/admin/control/admin", label: "Admin", icon: <FaUserShield className="icon" /> },
     { path: "/dashboard/admin/control/user", label: "User", icon: <FaUser className="icon" /> },
     { path: "/dashboard/admin/control/referred-customer", label: "Referred Customers", icon: <VscReferences className="icon" /> },
+    { path: "/dashboard/admin/control/sales-commission", label: "Sales Commission", icon: <CiMoneyBill className="icon" /> },
+    { path: "/dashboard/admin/control/allcommission-sales", label: "Search Commission Sales", icon: <CiMoneyBill className="icon" /> },
     // { path: "/", label: "Logout", icon: <CiLogin className="icon" /> , onClick: handleLogOut 
     // },
   ];
@@ -71,11 +119,20 @@ const DashboardLayout = () => {
 
   const filteredLinks = links?.filter(link => {
     if (res === "Admin" || res === "Moderator") {
-      return link.path !== "/dashboard/admin/control/Rev-sales";
+      return link.path !== "/dashboard/admin/control/Rev-sales" &
+      link.path !== "/dashboard/admin/control/pending-orders" &
+             link.path !==  "/dashboard/admin/control/calculate-commission"&
+             link.path !==  "/dashboard/admin/control/all-commission" &
+             link.path !==  "/dashboard/admin/control/your-link";
     }
     if (res === "Sales") {
-      return link.path === "/dashboard/admin/control/Rev-sales"; 
+      return link.path === "/dashboard/admin/control/Rev-sales" || 
+             link.path === "/dashboard/admin/control/pending-orders" ||
+             link.path ===  "/dashboard/admin/control/calculate-commission"||
+             link.path ===  "/dashboard/admin/control/all-commission"||
+             link.path ===  "/dashboard/admin/control/your-link";
     }
+    
     return false;
   });
   

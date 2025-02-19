@@ -51,6 +51,13 @@ import RevSales from '../Pages/Admin/RevSales';
 import MemberToMember from '../components/MemberToMember';
 import ReferralPurchases from '../components/ReferralPurchases';
 import UserReferalPurshase from '../Pages/Admin/UserReferalPurshase';
+import CommisionSales from '../Pages/Admin/CommisionSales';
+import CalculateCommission from '../Pages/Admin/CalculateCommission';
+import AllComission from '../Pages/Admin/AllComission';
+import CommissionSalesAdmin from '../Pages/Admin/CommissionSalesAdmin';
+import SearchCommisionAdmin from '../Pages/Admin/SearchCommisionAdmin';
+import AllCommissionToSales from '../Pages/Admin/AllCommissionToSales';
+import LinkSales from '../Pages/Admin/LinkSales';
 
 const Routing = () => {
   const location = useLocation();
@@ -95,7 +102,7 @@ const Routing = () => {
   return (
     <Routes>  
         <Route path="/login" element={token?<Navigate to={'/'}/>:<Login />} />
-        <Route path="/login-admin" element={token?<Navigate to={'/'}/>:<LoginAdmin />} />
+        <Route path="/login-admin" element={<LoginAdmin />} />
         <Route path="/sign-up" element={token?<Navigate to={'/'}/>:<SignUp />} />
         <Route path="/verify-email/:email" element={token?<Navigate to={'/'}/>:<OTPForm />} />
         <Route path="/forgot-password" element={token?<Navigate to={'/'}/>:<ForgetPassword />} />
@@ -138,6 +145,20 @@ const Routing = () => {
     element={(!tokenAdmin ||  !IsAvailable) ? <Navigate to='/login-admin' /> : <CategorySearch />} 
   />
   
+  <Route 
+  path="sales-commission" 
+  element={(tokenAdmin ||  IsAvailable) ? <CommissionSalesAdmin /> : <Navigate to="/login-admin" />} 
+/>
+
+<Route 
+  path="allcommission-sales" 
+  element={(tokenAdmin ||  IsAvailable) ? <AllCommissionToSales /> : <Navigate to="/login-admin" />} 
+/>
+
+<Route 
+  path="CommissionSearch" 
+  element={(tokenAdmin ||  IsAvailable) ? <SearchCommisionAdmin /> : <Navigate to="/login-admin" />} 
+/>
   <Route 
     path='ProductOutOfStock' 
     element={(!tokenAdmin ||   !IsAvailable) ? <Navigate to='/login-admin' /> : <ProductOutOfStock />} 
@@ -264,8 +285,24 @@ const Routing = () => {
   />
   
   <Route 
+  path="your-link" 
+  element={tokenAdmin && res == "Sales" ? <LinkSales /> : <Navigate to="/login-admin" />} 
+/>
+<Route 
   path="Rev-sales" 
   element={tokenAdmin && res == "Sales" ? <RevSales /> : <Navigate to="/login-admin" />} 
+/>
+<Route 
+  path="pending-orders" 
+  element={tokenAdmin && res == "Sales" ? <AllComission /> : <Navigate to="/login-admin" />} 
+/>
+<Route 
+  path="calculate-commission" 
+  element={tokenAdmin && res == "Sales" ? <CalculateCommission /> : <Navigate to="/login-admin" />} 
+/>
+<Route 
+  path="all-commission" 
+  element={tokenAdmin && res == "Sales" ? <CommisionSales /> : <Navigate to="/login-admin" />} 
 />
 
 </Route>

@@ -65,7 +65,7 @@ const UserReferalPurshase  = () => {
           style={{ width: "200px" }}
         />
         <Button type="primary" onClick={handleSearch}>
-          بحث
+          Search
         </Button>
       </div>
       <Table

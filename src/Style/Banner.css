@@ -38,6 +38,12 @@
   font-weight: bold;
   max-width: 450px;
 }
+html[dir='rtl'] .banner-content h2 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+  max-width: 450px;
+}
 
 .banner-content p {
   font-size: 1.3rem;

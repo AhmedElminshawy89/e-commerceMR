@@ -82,8 +82,6 @@ const SocialMedia = () => {
     if (!formValues.face) newErrors.face = "Face is required";
     if (!formValues.insta) newErrors.insta = "Instagram is required";
     if (!formValues.tiktok) newErrors.tiktok = "TikTok is required";
-    if (!formValues.twitter) newErrors.twitter = "Twitter is required";
-    if (!formValues.linkedIn) newErrors.linkedIn = "LinkedIn is required";
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;

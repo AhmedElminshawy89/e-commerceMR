@@ -338,11 +338,10 @@ const ProductsAdmin = () => {
     setProductToDelete(null);
   };
 
-  const handleExportToCSV = () => {
+  const handleExportToCSV = () => { 
     const header = [
       "id", "name_ar", "name_en", "desc_ar", "desc_en", 
-      "mainPrice", "priceDiscount", "colors", "sizes", 
-      "stock", "barcode"
+      "mainPrice", "priceDiscount", "colors", "sizes",  "barcode"
     ];
   
     const rows = categories.map((product) => [
@@ -355,27 +354,26 @@ const ProductsAdmin = () => {
       product.price_discount,
       (product.colors && Array.isArray(product.colors) ? product.colors.join("; ") : ""),
       (product.sizes && Array.isArray(product.sizes) ? product.sizes.join("; ") : ""),  
-      product.stock,
+      // product.stock,
       product.barcode,
       // product.mainImage,
       // product.otherImage,
     ]);
-  
-    let csvContent = header.join(",") + "\n";
+    let csvContent = "\ufeff" + header.join(",") + "\n";
+
     rows.forEach((row) => {
-      csvContent += row.map((cell) => {
-        const formattedCell = cell && cell.toString().includes(",") ? `"${cell}"` : cell;
-        return formattedCell;
-      }).join(",") + "\n";
+      csvContent += row.join(",") + "\n";
     });
-  
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-  
     link.setAttribute("href", url);
-    link.setAttribute("download", "products.csv");
+    link.setAttribute("download", "categories.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
   
   const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
@@ -630,6 +628,8 @@ const ProductsAdmin = () => {
     <MenuItem value="8">8</MenuItem>
     <MenuItem value="10">10</MenuItem>
     <MenuItem value="12">12</MenuItem>
+    <MenuItem value="14">14</MenuItem>
+    <MenuItem value="16">16</MenuItem>
   </Select>
   <FormHelperText>{errors.sizes}</FormHelperText>
 </FormControl>

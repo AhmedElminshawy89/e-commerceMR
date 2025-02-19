@@ -103,7 +103,7 @@ const ProductCard = ({ product }) => {
             <Rate disabled defaultValue={product.average_rating === 0 ? 1 : product.average_rating} />
           </div>
           <p className="product-description">
-  {product.desc.length > 100 ? `${product.desc.slice(0, 100)}...` : product.desc}
+  {product?.desc?.length > 100 ? `${product?.desc?.slice(0, 100)}...` : product?.desc}
 </p>
           <div className="price-section">
             <span className="original-price">{product.main_price}</span>
@@ -160,6 +160,7 @@ const ProductCard = ({ product }) => {
           borderRadius: '50%',
           display: 'inline-block',
           marginRight: '8px',
+          border:'1px solid #444'
         }} 
       />
     </Select.Option>

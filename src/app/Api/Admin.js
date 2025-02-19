@@ -58,6 +58,12 @@ export const adminApi = createApi({
           method: 'GET',
         }),
       }),
+      showAllSales: builder.query({
+        query: () => ({
+          url: `/admin/showSales`,
+          method: 'GET',
+        }),
+      }),
       showAdminSearch: builder.query({
         query: (name) => ({
           url: `/admin/searchAdmins?name=${name}`,
@@ -81,4 +87,5 @@ export const {
     useShowAdminTypeQuery,
     useDelAdminMutation,
     useLazyShowAdminSearchQuery,
+    useShowAllSalesQuery
 } = adminApi;

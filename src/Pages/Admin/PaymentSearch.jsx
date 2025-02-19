@@ -38,11 +38,24 @@ const PaymentSearch = () => {
 
   const columns = [
     { title: "Order ID", dataIndex: "order_id", key: "order_id", width: 50 },
+    {
+      title: "Name",
+      dataIndex: "shipping_data",
+      key: "shipping_data",
+      render(value) {
+        return (
+          <div>
+            {value?.first_name} {value?.last_name}
+          </div>
+        );
+      },
+      width: 150,
+    },
     { title: "Payment Method", dataIndex: "payment_method", key: "payment_method", width: 50 },
     { title: "Status", dataIndex: "status", key: "status", width: 50, render: getStatusTag },
-    { title: "Amount Before Discount", dataIndex: "before_discount", key: "before_discount", width: 200 },
-    { title: "Discount", dataIndex: "discount", key: "discount", width: 50 },
-    { title: "Amount After Discount", dataIndex: "amount_cents", key: "amount_cents", width: 200 },
+    // { title: "Amount Before Discount", dataIndex: "before_discount", key: "before_discount", width: 200 },
+    // { title: "Discount", dataIndex: "discount", key: "discount", width: 50 },
+    { title: "Amount After Discount", dataIndex: "amount_cents", key: "amount_cents", width: 150 },
     {
       title: "Actions",
       key: "actions",

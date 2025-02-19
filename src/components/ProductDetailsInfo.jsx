@@ -101,8 +101,8 @@ const ProductDetailsInfo = () => {
       
       localStorage.setItem("cart", JSON.stringify(cart));
       dispatch(setCartLength(cart.length));
-      
       message.success(i18n.language === "EN" ? "Item added to cart successfully!" : "تمت إضافة العنصر إلى السلة بنجاح!");
+      navigate('/product')
     } else {
       const ProductId = data?.data?.product?.id;
       await addToCart({
@@ -115,6 +115,7 @@ const ProductDetailsInfo = () => {
       });
       refetch()
       message.success(i18n.language === "EN" ? "Added to cart successfully!" : "تمت الإضافة إلى السلة بنجاح!");
+      navigate('/product')
     }
   };
   
@@ -332,7 +333,8 @@ const ProductDetailsInfo = () => {
                     backgroundColor: color,
                     display: "block",
                     margin: '0 auto',
-                    borderRadius: '20px'
+                    borderRadius: '20px',
+                    border:'1px solid #eee'
                   }}
                 ></span>
               </td>
@@ -345,13 +347,17 @@ const ProductDetailsInfo = () => {
 
                 )}
             </div>
-            <TitleSection title={i18n.language === 'EN' ? "Related Products" : "المنتجات ذات الصلة"}
-                secTitle={i18n.language === 'EN' ? "View All" : "عرض الكل"} to="/products" />
-            <div className="products-container">
-              {data?.data?.related_products?.map((product, index) => (
-                <ProductCard key={product?.id || index} product={product} />
-              ))}
-            </div>
+            {data?.data?.related_products?.length!==0&&(
+              <>
+              <TitleSection title={i18n.language === 'EN' ? "Related Products" : "المنتجات ذات الصلة"}
+                  secTitle={i18n.language === 'EN' ? "View All" : "عرض الكل"} to="/product" />
+              <div className="products-container">
+                {data?.data?.related_products?.map((product, index) => (
+                  <ProductCard key={product?.id || index} product={product} />
+                ))}
+              </div>
+              </>
+            )}
           </>
         )}
       </div>
