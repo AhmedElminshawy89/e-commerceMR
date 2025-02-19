@@ -227,8 +227,8 @@ const ShoppingCart = () => {
 
 {SingleUser?.user?.id !== undefined && discount?.cashback?.length > 0 &&  data?.data?.cartItems.length > 0 && (
   <>
-    <h3>{t("Discount")}: {discount?.cashback[0]?.type==='percent'?"%":"L.E"}{discount?.cashback[0]?.cashback}</h3>
-    <h3>{t("Total After Discount")}: ${totalAfterCashback.toFixed(2)}</h3>
+    <h3>{t("Discount")}: {discount?.cashback[0]?.type==='percent'?"%":"EGP"}{discount?.cashback[0]?.cashback}</h3>
+    <h3>{t("Total After Discount")}:{t('EGP')}{totalAfterCashback.toFixed(2)}</h3>
   </>
 )}
 

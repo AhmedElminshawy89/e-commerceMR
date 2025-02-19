@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { setCartLength } from "../app/cartSlice";
 
 const ProductCard = ({ product }) => {
-  const { i18n } = useTranslation()
+  const { t,i18n } = useTranslation()
   const token = document.cookie.split('; ')?.find(row => row?.startsWith('token='))?.split('=')[1];
   const [addToCart, { isLoading: loadingCart }] = useAddToCartMutation()
 
@@ -106,8 +106,8 @@ const ProductCard = ({ product }) => {
   {product?.desc?.length > 100 ? `${product?.desc?.slice(0, 100)}...` : product?.desc}
 </p>
           <div className="price-section">
-            <span className="original-price">{product.main_price}</span>
-            <span className="discounted-price">{product.price_discount}</span>
+            <span className="original-price">{product.main_price}{t('EGP')}</span>
+            <span className="discounted-price">{product.price_discount}{t('EGP')}</span>
             <span className="calcDis-price">{calcDis}%</span>
           </div>
 

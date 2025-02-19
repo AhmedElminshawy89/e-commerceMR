@@ -18,7 +18,7 @@ const ProductDetailsInfo = () => {
   const { name } = useParams();
   const [currentTab, setCurrentTab] = useState(1);
   const { data , isLoading} = useShowSingleProductQuery(name)
-  const {i18n} = useTranslation()
+  const {t,i18n} = useTranslation()
   const [form] = useForm(); 
   const navigate = useNavigate()
 
@@ -236,8 +236,8 @@ const ProductDetailsInfo = () => {
                     </div>
                 <div className="price-section bt">
                 <span className="discounted-price-details c">{i18n.language==="EN"?"Price":"السعر"} : </span>
-                      <span className="original-price-details">{data?.data?.product?.main_price}$</span>
-                      <span className="discounted-price-details"> {data?.data?.product?.price_discount}$</span>
+                      <span className="original-price-details">{data?.data?.product?.main_price}{t('EGP')}</span>
+                      <span className="discounted-price-details"> {data?.data?.product?.price_discount}{t('EGP')}</span>
                 </div>       
                 <div className="wrap-btn-quantity">
                     <div className="quantity">
