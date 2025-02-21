@@ -1,4 +1,4 @@
-import { FaCartPlus, FaHome, FaProductHunt, FaWindowClose } from "react-icons/fa"; 
+import { FaCartPlus, FaHome, FaProductHunt } from "react-icons/fa"; 
 import { useLocation, useNavigate } from "react-router-dom";
 import "../Style/Header.css";
 import logo from '../assets/Img/logo.jpg';

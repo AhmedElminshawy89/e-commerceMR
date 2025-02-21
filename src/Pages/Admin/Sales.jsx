@@ -205,7 +205,7 @@ const Sales = () => {
   };
 
   const handleCopyLink = (link) => {
-    const Link = `http://localhost:5173/?ref=${link}`;
+    const Link = `https://mr-elite.com/?ref=${link}`;
     navigator.clipboard.writeText(Link)
       .then(() => {
         message.success("Link copied to clipboard!");

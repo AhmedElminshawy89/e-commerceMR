@@ -37,11 +37,19 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [sidebar,setSideBar] = useState("")
   const res = document.cookie.split('; ').find(row => row.startsWith('res='))?.split('=')[1];
-  
   const handleLogOut = () => {
-    document.cookie = "tokenAdmin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.clear();
+    sessionStorage.clear(); 
+  
+    document.cookie.split(";").forEach((cookie) => {
+      document.cookie = cookie
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+    });
+  
     window.location.reload();
   };
+  
 
   const links = [
     { path: "/dashboard/admin/control", label: "Dashboard", icon: <FaHome className="icon" /> },

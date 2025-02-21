@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import "../Style/ProfileLayout.css";
 import BannerPage from "./../Shared/BannerPage";
 import { useTranslation } from "react-i18next";
@@ -8,12 +8,21 @@ const ProfileLayout = () => {
   const location = useLocation();
   const { i18n } = useTranslation();
   const {data} = useShowAllAdminImageBannersQuery()
+  const navigate = useNavigate();
 
   const handleLogOut = () => {
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    localStorage.removeItem("ref");
+    localStorage.clear();
+    sessionStorage.clear();
+  
+    document.cookie.split(";").forEach((cookie) => {
+      document.cookie = cookie
+        .replace(/^ +/, "") 
+        .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+    });
+    navigate('/')
     window.location.reload();
   };
+  
 
   return (
     <>

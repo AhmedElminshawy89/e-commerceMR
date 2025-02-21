@@ -35,7 +35,7 @@ const MemberToMember = () => {
               : `شارك كود الإحالة الخاص بك واستمتع بخصم ${discountValue}${discountType === "percent" ? "%" : " LE"}!`}
           </Paragraph>
           <Text copyable style={{ fontSize: "18px", fontWeight: "bold", color: "#1890ff" }}>
-            http://localhost:5173/?ref={userCode}
+            https://mr-elite.com/?ref={userCode}
           </Text>
           <Paragraph type="secondary" style={{ marginTop: "10px" }}>
             {i18n.language === "EN"

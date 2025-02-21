@@ -46,6 +46,19 @@ const TopBar = () => {
     navigate(url);
   };
 
+  const handleLogOut = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+  
+    document.cookie.split(";").forEach((cookie) => {
+      document.cookie = cookie
+        .replace(/^ +/, "") 
+        .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+    });
+    navigate('/')
+    window.location.reload();
+  };
+
   const menu = (
     <Menu>
       <Menu.Item key="username" style={{width:'120px'}}>
@@ -54,10 +67,7 @@ const TopBar = () => {
       <Menu.Item key="profile">
         <Link to="/my-account">{i18n.language==="EN"?"My Profile":"الملف الشخصي"} </Link>
       </Menu.Item>
-      <Menu.Item key="logout" onClick={() => {
-        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.reload();
-      }}>
+      <Menu.Item key="logout" onClick={handleLogOut}>
         {i18n.language==="EN"?"Log out":"تسجيل الخروج"}
       </Menu.Item>
     </Menu>
